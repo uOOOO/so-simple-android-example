@@ -1,0 +1,15 @@
+apply plugin: 'kotlin'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib'
+    implementation 'org.koin:koin-core:' + vers.koin
+    implementation 'io.reactivex.rxjava2:rxjava:' + vers.rxjava.java
+
+    testImplementation 'junit:junit:' + vers.junit
+    testImplementation 'io.mockk:mockk:' + vers.mockk
+}
+
+sourceCompatibility = JavaVersion.VERSION_1_8
+targetCompatibility = JavaVersion.VERSION_1_8

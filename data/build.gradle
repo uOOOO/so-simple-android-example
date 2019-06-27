@@ -1,0 +1,55 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion vers.compileSdk
+
+    defaultConfig {
+        minSdkVersion vers.minSdk
+        targetSdkVersion vers.compileSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "TMDB_API_KEY", "\"" + getApiKey() + "\"")
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + vers.kotlin
+    implementation 'androidx.appcompat:appcompat:' + vers.android.appcompat
+    implementation 'org.koin:koin-android:' + vers.koin
+    implementation 'io.reactivex.rxjava2:rxjava:' + vers.rxjava.java
+    implementation 'com.squareup.retrofit2:retrofit:' + vers.retrofit
+    implementation 'com.squareup.retrofit2:adapter-rxjava2:' + vers.retrofit
+    implementation 'com.squareup.retrofit2:converter-moshi:' + vers.retrofit
+    implementation 'com.squareup.okhttp3:logging-interceptor:' + vers.okhttp
+    implementation 'com.squareup.moshi:moshi:' + vers.moshi
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:' + vers.moshi
+    
+    debugImplementation 'com.readystatesoftware.chuck:library:' + vers.chuck
+    releaseImplementation 'com.readystatesoftware.chuck:library-no-op:' + vers.chuck
+
+    testImplementation 'junit:junit:' + vers.junit
+    testImplementation 'io.mockk:mockk:' + vers.mockk
+    androidTestImplementation 'androidx.test:runner:' + vers.android.test.runner
+    androidTestImplementation 'androidx.test.espresso:espresso-core:' + vers.android.test.espressoCore
+
+    implementation project(':domain')
+}
+
+def getApiKey() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties.getProperty("TMDB_API_KEY")
+}
