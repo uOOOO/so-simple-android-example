@@ -13,7 +13,7 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "TMDB_API_KEY", "\"" + getApiKey() + "\"")
+        buildConfigField("String", "TMDB_API_KEY", getTMDBApiKey())
     }
     buildTypes {
         release {
@@ -36,7 +36,7 @@ dependencies {
     implementation 'com.squareup.okhttp3:logging-interceptor:' + vers.okhttp
     implementation 'com.squareup.moshi:moshi:' + vers.moshi
     kapt 'com.squareup.moshi:moshi-kotlin-codegen:' + vers.moshi
-    
+
     debugImplementation 'com.readystatesoftware.chuck:library:' + vers.chuck
     releaseImplementation 'com.readystatesoftware.chuck:library-no-op:' + vers.chuck
 
@@ -48,8 +48,11 @@ dependencies {
     implementation project(':domain')
 }
 
-def getApiKey() {
+def getTMDBApiKey() {
     Properties properties = new Properties()
     properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    if (!properties.containsKey("TMDB_API_KEY")) {
+        throw new GradleException('Not found TMDB_API_KEY in local.properties.')
+    }
     return properties.getProperty("TMDB_API_KEY")
 }
