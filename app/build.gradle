@@ -29,24 +29,24 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk7:' + vers.kotlin
-    implementation 'androidx.appcompat:appcompat:' + vers.android.appcompat
-    implementation 'androidx.core:core-ktx:' + vers.android.coreKtx
-    implementation 'androidx.constraintlayout:constraintlayout:' + vers.android.constraintlayout
-    implementation 'org.koin:koin-android:' + vers.koin
-    implementation 'org.koin:koin-androidx-scope:' + vers.koin
-    implementation 'org.koin:koin-androidx-viewmodel:' + vers.koin
-    implementation 'io.reactivex.rxjava2:rxjava:' + vers.rxjava.java
-    implementation 'com.github.bumptech.glide:glide:' + vers.glide
-    kapt 'com.github.bumptech.glide:compiler:' + vers.glide
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$vers.kotlin"
+    implementation "androidx.appcompat:appcompat:$vers.android.appcompat"
+    implementation "androidx.core:core-ktx:$vers.android.coreKtx"
+    implementation "androidx.constraintlayout:constraintlayout:$vers.android.constraintlayout"
+    implementation "org.koin:koin-android:$vers.koin"
+    implementation "org.koin:koin-androidx-scope:$vers.koin"
+    implementation "org.koin:koin-androidx-viewmodel:$vers.koin"
+    implementation "io.reactivex.rxjava2:rxjava:$vers.rxjava.java"
+    implementation "com.github.bumptech.glide:glide:$vers.glide"
+    kapt "com.github.bumptech.glide:compiler:$vers.glide"
 
-    implementation 'com.akaita.java:rxjava2-debug:' + vers.rxjava.debug
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:' + vers.leakcanary
+    implementation "com.akaita.java:rxjava2-debug:$vers.rxjava.debug"
+    debugImplementation "com.squareup.leakcanary:leakcanary-android:$vers.leakcanary"
 
-    testImplementation 'junit:junit:' + vers.junit
-    testImplementation 'io.mockk:mockk:' + vers.mockk
-    androidTestImplementation 'androidx.test:runner:' + vers.android.test.runner
-    androidTestImplementation 'androidx.test.espresso:espresso-core:' + vers.android.test.espressoCore
+    testImplementation "junit:junit:$vers.junit"
+    testImplementation "io.mockk:mockk:$vers.mockk"
+    androidTestImplementation "androidx.test:runner:$vers.android.test.runner"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$vers.android.test.espressoCore"
 
     implementation project(':data')
     implementation project(':domain')
