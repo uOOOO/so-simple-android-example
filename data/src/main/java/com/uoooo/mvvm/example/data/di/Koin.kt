@@ -1,16 +1,15 @@
 package com.uoooo.mvvm.example.data.di
 
 import com.readystatesoftware.chuck.ChuckInterceptor
+import com.uoooo.mvvm.example.data.BuildConfig
+import com.uoooo.mvvm.example.data.ServerConfig
+import com.uoooo.mvvm.example.data.misc.ApiKeyInterceptor
 import com.uoooo.mvvm.example.data.repository.MovieRepositoryImpl
 import com.uoooo.mvvm.example.data.source.MovieDataSource
 import com.uoooo.mvvm.example.data.source.MovieDataSourceImpl
 import com.uoooo.mvvm.example.data.source.remote.MovieDataSourceRemote
 import com.uoooo.mvvm.example.data.source.remote.MovieDataSourceRemoteImpl
-import com.uoooo.mvvm.example.data.BuildConfig
-import com.uoooo.mvvm.example.data.misc.ApiKeyInterceptor
 import com.uoooo.mvvm.example.data.source.remote.api.MovieService
-import com.uoooo.mvvm.example.domain.interactor.GetMovieUseCase
-import com.uoooo.mvvm.example.domain.interactor.GetMovieUseCaseImpl
 import com.uoooo.mvvm.example.domain.repository.MovieRepository
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,7 +24,11 @@ val webServiceModule = module {
             .addInterceptor(ApiKeyInterceptor())
             .addInterceptor(ChuckInterceptor(get()))
             .addInterceptor(HttpLoggingInterceptor().apply {
-                level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
+                level =
+                    if (BuildConfig.DEBUG)
+                        HttpLoggingInterceptor.Level.BODY
+                    else
+                        HttpLoggingInterceptor.Level.NONE
             })
             .build()
     }
@@ -37,7 +40,7 @@ val webServiceModule = module {
     }
     single {
         Retrofit.Builder()
-            .baseUrl("https://api.themoviedb.org/3/")
+            .baseUrl(ServerConfig.API_BASE_URL)
             .client(get())
             .addCallAdapterFactory(get<RxJava2CallAdapterFactory>())
             .addConverterFactory(get<MoshiConverterFactory>())

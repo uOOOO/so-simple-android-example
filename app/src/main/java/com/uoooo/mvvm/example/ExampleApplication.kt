@@ -6,6 +6,7 @@ import com.bumptech.glide.Glide
 import com.uoooo.mvvm.example.data.di.dataSourceModule
 import com.uoooo.mvvm.example.data.di.repositoryModule
 import com.uoooo.mvvm.example.data.di.webServiceModule
+import com.uoooo.mvvm.example.di.viewModelModule
 import com.uoooo.mvvm.example.domain.di.interactorModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.logger.AndroidLogger
@@ -23,7 +24,7 @@ class ExampleApplication : Application() {
         startKoin {
             androidContext(this@ExampleApplication)
             logger(if (BuildConfig.DEBUG) AndroidLogger(Level.DEBUG) else AndroidLogger())
-            modules(listOf(webServiceModule, dataSourceModule, repositoryModule, interactorModule))
+            modules(listOf(webServiceModule, dataSourceModule, repositoryModule, interactorModule, viewModelModule))
         }
     }
 
