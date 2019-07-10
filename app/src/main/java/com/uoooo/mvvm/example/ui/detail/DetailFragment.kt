@@ -1,20 +1,15 @@
 package com.uoooo.mvvm.example.ui.detail
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
-import at.huber.youtubeExtractor.VideoMeta
-import at.huber.youtubeExtractor.YouTubeExtractor
-import at.huber.youtubeExtractor.YtFile
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.exoplayer2.Player
@@ -24,27 +19,28 @@ import com.uoooo.mvvm.example.GlideApp
 import com.uoooo.mvvm.example.R
 import com.uoooo.mvvm.example.data.ServerConfig
 import com.uoooo.mvvm.example.domain.model.Movie
+import com.uoooo.mvvm.example.domain.model.Video
 import com.uoooo.mvvm.example.extension.printEnhancedStackTrace
 import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
-import io.reactivex.Single
+import com.uoooo.mvvm.example.ui.viewmodel.MovieViewModel
+import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import io.sellmair.disposer.onStop
 import kotlinx.android.synthetic.main.fragment_detail.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class DetailFragment : Fragment() {
+    private val movieViewModel: MovieViewModel by viewModel()
     private lateinit var backdropImage: ImageView
-
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
     }
-
     private val listenerDisposer = Disposer.create(onStop)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -73,58 +69,36 @@ class DetailFragment : Fragment() {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(posterImage)
 
-        playButton.clicks()
-            .subscribe { playerStart(Uri.parse("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears_sd.mpd")) }
-            .disposeBy(onDestroy)
+        loadVideoData(movie.id)
     }
 
-    private fun getYoutubeLink(context: Context, key: String): Single<Uri> {
-        return Single.create {
-            CustomYouTubeExtractor(context, object : CustomYouTubeExtractor.Listener {
-                override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
-                    if (it.isDisposed) {
-                        return
-                    }
-                    try {
-                        val itag = 22
-                        val downloadUrl = ytFiles?.get(itag)?.url
-                        if (!it.isDisposed) it.onSuccess(Uri.parse(downloadUrl))
-                    } catch (e: Exception) {
-                        if (!it.isDisposed) it.onError(RuntimeException("Didn't extract Youtube link."))
-                    }
+    private fun loadVideoData(id: Int) {
+        context?.let { context ->
+            movieViewModel.getVideos(id)
+                .flatMap { it ->
+                    Observable.fromIterable(it)
+                        .filter { it.site == Video.Site.YOUTUBE }
+                        .toList()
                 }
-            }).extract("http://youtube.com/watch?v=$key", true, true)
-        }
-    }
-
-    private class CustomYouTubeExtractor(context: Context, private val listener: Listener) : YouTubeExtractor(context) {
-        interface Listener {
-            fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?)
-        }
-
-        override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
-            listener.onExtractionComplete(ytFiles, videoMeta)
+                .flatMap { movieViewModel.getYoutubeLink(context, it[0].key) }
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({uri ->
+                    bindPlayButton(uri)
+                    showInteractionView()
+                }, {
+                    it.printEnhancedStackTrace()
+                    // TODO : show error message
+                })
+                .disposeBy(onDestroy)
         }
     }
 
     private fun playerStart(uri: Uri) {
         context?.let { context ->
-            getYoutubeLink(context, "LFoz8ZJWmPs")
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-
-                }, {
-                    it.printEnhancedStackTrace()
-                })
-                .disposeBy(onStop)
-        }
-
-        context?.let {
             hideInteractionView()
-            playManager.prepare(it, playerView, null, uri, null)
+            playManager.prepare(context, playerView, null, uri, null)
             playManager.start()
-            addPlayerListeners()
+            bindPlayerListeners()
         }
     }
 
@@ -136,7 +110,13 @@ class DetailFragment : Fragment() {
         playManager.release()
     }
 
-    private fun addPlayerListeners() {
+    private fun bindPlayButton(uri: Uri) {
+        playButton.clicks()
+            .subscribe { playerStart(uri) }
+            .disposeBy(onDestroy)
+    }
+
+    private fun bindPlayerListeners() {
         playManager.addAnalyticsListener(EventLogger(playManager.trackSelector))
         playManager.player?.apply {
             listenerDisposer += events().subscribe { onExoPlayerEventListener(it) }
@@ -145,14 +125,16 @@ class DetailFragment : Fragment() {
     }
 
     private fun showInteractionView() {
-        playerView.hideController()
-        playButton.resumeAnimation()
+        Log.d(TAG, "showInteractionView()")
         interactionGroup.visibility = View.VISIBLE
+        playButton.resumeAnimation()
+        playerView.hideController()
     }
 
     private fun hideInteractionView() {
+        Log.d(TAG, "hideInteractionView()")
+        interactionGroup.visibility = View.GONE
         playButton.pauseAnimation()
-        interactionGroup.visibility = View.INVISIBLE
     }
 
     private fun showBackdropImage() {
@@ -161,12 +143,6 @@ class DetailFragment : Fragment() {
 
     private fun hideBackdropImage() {
         backdropImage.visibility = View.INVISIBLE
-    }
-
-    override fun onStart() {
-        super.onStart()
-        showInteractionView()
-        showBackdropImage()
     }
 
     override fun onStop() {

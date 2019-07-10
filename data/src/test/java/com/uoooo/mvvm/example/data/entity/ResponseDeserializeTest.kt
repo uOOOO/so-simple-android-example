@@ -1,7 +1,9 @@
 package com.uoooo.mvvm.example.data.entity
 
 import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.EnumJsonAdapter
 import com.uoooo.mvvm.example.data.source.remote.response.MoviePopularResponse
+import com.uoooo.mvvm.example.data.source.remote.response.VideosResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -65,5 +67,46 @@ class ResponseDeserializeTest {
         val response = adapter.fromJson(json)
         assertEquals(response?.page, 1)
         assertEquals(response?.results?.size, 3)
+    }
+
+    @Test
+    fun `videos response deserialize`() {
+        val json = "{\n" +
+                "   \"id\":301528,\n" +
+                "   \"results\":[\n" +
+                "      {\n" +
+                "         \"id\":\"5c6d1de192514120d5033790\",\n" +
+                "         \"iso_639_1\":\"en\",\n" +
+                "         \"iso_3166_1\":\"US\",\n" +
+                "         \"key\":\"LDXYRzerjzU\",\n" +
+                "         \"name\":\"Toy Story 4 | Official Teaser Trailer\",\n" +
+                "         \"site\":\"YouTube1\",\n" +
+                "         \"size\":1080,\n" +
+                "         \"type\":\"Teaser\"\n" +
+                "      },\n" +
+                "      {\n" +
+                "         \"id\":\"5d0b262c92514171b0b85c16\",\n" +
+                "         \"iso_639_1\":\"en\",\n" +
+                "         \"iso_3166_1\":\"US\",\n" +
+                "         \"key\":\"Pl9JS8-gnWQ\",\n" +
+                "         \"name\":\"Toy Story 4 | Official Trailer 2\",\n" +
+                "         \"site\":\"YouTube\",\n" +
+                "         \"size\":1080,\n" +
+                "         \"type\":\"Trailer2\"\n" +
+                "      }\n" +
+                "   ]\n" +
+                "}"
+        val adapter = moshi.newBuilder()
+            .add(
+                Video.Type::class.java,
+                EnumJsonAdapter.create(Video.Type::class.java).withUnknownFallback(Video.Type.UNKNOWN)
+            )
+            .add(
+                Video.Site::class.java,
+                EnumJsonAdapter.create(Video.Site::class.java).withUnknownFallback(Video.Site.UNKNOWN)
+            )
+            .build().adapter(VideosResponse::class.java).nullSafe()
+        val response = adapter.fromJson(json)
+        assertEquals(response?.results?.size, 2)
     }
 }

@@ -10,7 +10,9 @@
         android:id="@+id/interactionGroup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:constraint_referenced_ids="posterImage, playButton" />
+        android:visibility="gone"
+        app:constraint_referenced_ids="posterImage, playButton"
+        tools:visibility="visible" />
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/playerView"

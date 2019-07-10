@@ -35,6 +35,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-moshi:$vers.retrofit"
     implementation "com.squareup.okhttp3:logging-interceptor:$vers.okhttp"
     implementation "com.squareup.moshi:moshi:$vers.moshi"
+    implementation "com.squareup.moshi:moshi-adapters:$vers.moshi"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$vers.moshi"
 
     debugImplementation "com.readystatesoftware.chuck:library:$vers.chuck"

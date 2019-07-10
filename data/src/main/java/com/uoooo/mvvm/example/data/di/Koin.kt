@@ -1,8 +1,11 @@
 package com.uoooo.mvvm.example.data.di
 
 import com.readystatesoftware.chuck.ChuckInterceptor
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.adapters.EnumJsonAdapter
 import com.uoooo.mvvm.example.data.BuildConfig
 import com.uoooo.mvvm.example.data.ServerConfig
+import com.uoooo.mvvm.example.data.entity.Video
 import com.uoooo.mvvm.example.data.misc.ApiKeyInterceptor
 import com.uoooo.mvvm.example.data.repository.MovieRepositoryImpl
 import com.uoooo.mvvm.example.data.source.MovieDataSource
@@ -36,7 +39,17 @@ val webServiceModule = module {
         RxJava2CallAdapterFactory.create()
     }
     single {
-        MoshiConverterFactory.create()
+        val moshi = Moshi.Builder()
+            .add(
+                Video.Type::class.java,
+                EnumJsonAdapter.create(Video.Type::class.java).withUnknownFallback(Video.Type.UNKNOWN)
+            )
+            .add(
+                Video.Site::class.java,
+                EnumJsonAdapter.create(Video.Site::class.java).withUnknownFallback(Video.Site.UNKNOWN)
+            )
+            .build()
+        MoshiConverterFactory.create(moshi)
     }
     single {
         Retrofit.Builder()

@@ -1,9 +1,9 @@
 package com.uoooo.mvvm.example.ui.movie.source
 
 import androidx.paging.DataSource
-import com.uoooo.mvvm.example.ui.common.BaseDataSourceFactory
 import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.domain.repository.MovieRepository
+import com.uoooo.mvvm.example.ui.common.BaseDataSourceFactory
 
 class PopularMovieDataSourceFactory(private val repository: MovieRepository) :
     BaseDataSourceFactory<Int, Movie>() {
@@ -15,6 +15,6 @@ class PopularMovieDataSourceFactory(private val repository: MovieRepository) :
     }
 
     override fun onCleared() {
-        popularMovieDataSource.onCleared()
+        if (::popularMovieDataSource.isInitialized) popularMovieDataSource.onCleared()
     }
 }
