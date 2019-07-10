@@ -1,14 +1,11 @@
 package com.uoooo.mvvm.example.ui.detail
 
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -30,18 +27,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
-import io.sellmair.disposer.onStop
+import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
 import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 
 class DetailFragment : Fragment() {
     private val movieViewModel: MovieViewModel by viewModel()
-    private lateinit var backdropImage: ImageView
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
     }
-    private val listenerDisposer = Disposer.create(onStop)
+    private val listenerDisposer = Disposer.create(onDestroy)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_detail, container, false)
@@ -52,22 +48,14 @@ class DetailFragment : Fragment() {
 
         val movie: Movie = (arguments?.getSerializable(BUNDLE_OBJECT) ?: return) as Movie
 
-        backdropImage = ImageView(context).apply {
-            setColorFilter(Color.parseColor("#949494"), PorterDuff.Mode.MULTIPLY)
-            playerView.overlayFrameLayout?.addView(this)
-        }
-
-        GlideApp.with(backdropImage)
+        GlideApp.with(playerView.exo_backdrop)
             .load(getPosterImageUrl(movie.backdropPath, ServerConfig.ImageSize.NORMAL))
             .transition(DrawableTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(backdropImage)
+            .into(playerView.exo_backdrop)
 
-        GlideApp.with(posterImage)
-            .load(getPosterImageUrl(movie.posterPath, ServerConfig.ImageSize.NORMAL))
-            .transition(DrawableTransitionOptions.withCrossFade())
-            .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(posterImage)
+        playerView.useController = false
+        playerView.controllerShowTimeoutMs = 1000
 
         loadVideoData(movie.id)
     }
@@ -96,6 +84,7 @@ class DetailFragment : Fragment() {
     private fun playerStart(uri: Uri) {
         context?.let { context ->
             hideInteractionView()
+            playerView.useController = true
             playManager.prepare(context, playerView, null, uri, null)
             playManager.start()
             bindPlayerListeners()
@@ -125,28 +114,28 @@ class DetailFragment : Fragment() {
     }
 
     private fun showInteractionView() {
-        Log.d(TAG, "showInteractionView()")
-        interactionGroup.visibility = View.VISIBLE
         playButton.resumeAnimation()
-        playerView.hideController()
+        interactionGroup.visibility = View.VISIBLE
     }
 
     private fun hideInteractionView() {
-        Log.d(TAG, "hideInteractionView()")
         interactionGroup.visibility = View.GONE
         playButton.pauseAnimation()
     }
 
     private fun showBackdropImage() {
-        backdropImage.visibility = View.VISIBLE
+        playerView.exo_backdrop.visibility = View.VISIBLE
     }
 
     private fun hideBackdropImage() {
-        backdropImage.visibility = View.INVISIBLE
+        playerView.exo_backdrop.visibility = View.INVISIBLE
     }
 
     override fun onStop() {
         playerPause()
+        showBackdropImage()
+        playerView.showController()
+        playerView.controllerHideOnTouch = false
         super.onStop()
     }
 
@@ -163,11 +152,17 @@ class DetailFragment : Fragment() {
 
     private fun onPlayerStateChanged(event: ExoPlayerEventPlayerStateChanged) {
         Log.d(TAG, "onPlayerStateChanged() event = $event")
-        if (event.playbackState == Player.STATE_ENDED) {
-            listenerDisposer.dispose()
-            playerRelease()
-            showBackdropImage()
-            showInteractionView()
+        when (event.playbackState) {
+            Player.STATE_READY -> {
+                hideBackdropImage()
+                hideInteractionView()
+                playerView.controllerHideOnTouch = true
+            }
+            Player.STATE_ENDED -> {
+                listenerDisposer.dispose()
+                playerRelease()
+                showBackdropImage()
+            }
         }
     }
 
@@ -178,8 +173,6 @@ class DetailFragment : Fragment() {
     }
 
     private fun onRenderedFirstFrame() {
-        Log.d(TAG, "onRenderedFirstFrame()")
-        hideBackdropImage()
         hideInteractionView()
     }
 
