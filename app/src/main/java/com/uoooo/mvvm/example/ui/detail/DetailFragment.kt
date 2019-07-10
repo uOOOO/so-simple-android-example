@@ -1,15 +1,20 @@
 package com.uoooo.mvvm.example.ui.detail
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import at.huber.youtubeExtractor.VideoMeta
+import at.huber.youtubeExtractor.YouTubeExtractor
+import at.huber.youtubeExtractor.YtFile
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.exoplayer2.Player
@@ -19,14 +24,19 @@ import com.uoooo.mvvm.example.GlideApp
 import com.uoooo.mvvm.example.R
 import com.uoooo.mvvm.example.data.ServerConfig
 import com.uoooo.mvvm.example.domain.model.Movie
+import com.uoooo.mvvm.example.extension.printEnhancedStackTrace
 import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
+import io.reactivex.Single
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import io.sellmair.disposer.onStop
 import kotlinx.android.synthetic.main.fragment_detail.*
+
 
 class DetailFragment : Fragment() {
     private lateinit var backdropImage: ImageView
@@ -64,17 +74,58 @@ class DetailFragment : Fragment() {
             .into(posterImage)
 
         playButton.clicks()
-            .subscribe { playerStart() }
+            .subscribe { playerStart(Uri.parse("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears_sd.mpd")) }
             .disposeBy(onDestroy)
     }
 
-    private fun playerStart() {
-        val contentUri =
-            Uri.parse("https://storage.googleapis.com/wvmedia/clear/h264/tears/tears_sd.mpd")
-        playManager.prepare(context!!, playerView, null, contentUri, null)
-        playManager.start()
-        addPlayerListeners()
-        hideInteractionView()
+    private fun getYoutubeLink(context: Context, key: String): Single<Uri> {
+        return Single.create {
+            CustomYouTubeExtractor(context, object : CustomYouTubeExtractor.Listener {
+                override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
+                    if (it.isDisposed) {
+                        return
+                    }
+                    try {
+                        val itag = 22
+                        val downloadUrl = ytFiles?.get(itag)?.url
+                        if (!it.isDisposed) it.onSuccess(Uri.parse(downloadUrl))
+                    } catch (e: Exception) {
+                        if (!it.isDisposed) it.onError(RuntimeException("Didn't extract Youtube link."))
+                    }
+                }
+            }).extract("http://youtube.com/watch?v=$key", true, true)
+        }
+    }
+
+    private class CustomYouTubeExtractor(context: Context, private val listener: Listener) : YouTubeExtractor(context) {
+        interface Listener {
+            fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?)
+        }
+
+        override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
+            listener.onExtractionComplete(ytFiles, videoMeta)
+        }
+    }
+
+    private fun playerStart(uri: Uri) {
+        context?.let { context ->
+            getYoutubeLink(context, "LFoz8ZJWmPs")
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+
+                }, {
+                    it.printEnhancedStackTrace()
+                })
+                .disposeBy(onStop)
+        }
+
+        context?.let {
+            hideInteractionView()
+            playManager.prepare(it, playerView, null, uri, null)
+            playManager.start()
+            addPlayerListeners()
+        }
     }
 
     private fun playerPause() {
@@ -137,7 +188,7 @@ class DetailFragment : Fragment() {
     private fun onPlayerStateChanged(event: ExoPlayerEventPlayerStateChanged) {
         Log.d(TAG, "onPlayerStateChanged() event = $event")
         if (event.playbackState == Player.STATE_ENDED) {
-            if (!listenerDisposer.isDisposed) listenerDisposer.dispose()
+            listenerDisposer.dispose()
             playerRelease()
             showBackdropImage()
             showInteractionView()

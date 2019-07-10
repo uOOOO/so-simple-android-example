@@ -62,6 +62,8 @@ dependencies {
     androidTestImplementation "androidx.test:runner:$vers.android.test.runner"
     androidTestImplementation "androidx.test.espresso:espresso-core:$vers.android.test.espressoCore"
 
+    implementation 'com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT'
+
     implementation project(':data')
     implementation project(':domain')
 }
