@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#303030">
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/interactionGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:constraint_referenced_ids="posterImage, playButton" />
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@android:color/black"
+        app:layout_constraintDimensionRatio="16:9"
+        app:show_buffering="when_playing" />
+
+    <ImageView
+        android:id="@+id/posterImage"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="15dp"
+        android:background="@android:color/black"
+        android:contentDescription="@null"
+        android:elevation="5dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toBottomOf="@id/playerView"
+        app:layout_constraintDimensionRatio="1:1.5"
+        app:layout_constraintStart_toStartOf="@id/playerView"
+        app:layout_constraintTop_toTopOf="@id/playerView"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/playButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="15dp"
+        app:layout_constraintBottom_toBottomOf="@id/playerView"
+        app:layout_constraintEnd_toEndOf="@id/playerView"
+        app:layout_constraintStart_toEndOf="@id/posterImage"
+        app:layout_constraintTop_toTopOf="@id/playerView"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/play_button" />
+</androidx.constraintlayout.motion.widget.MotionLayout>

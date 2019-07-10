@@ -12,6 +12,7 @@ android {
         targetSdkVersion vers.compileSdk
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -36,6 +37,7 @@ dependencies {
     implementation "androidx.constraintlayout:constraintlayout:$vers.android.constraintlayout"
     implementation "androidx.paging:paging-runtime:$vers.android.paging"
     implementation "androidx.paging:paging-rxjava2:$vers.android.paging"
+    implementation "com.google.android.material:material:$vers.android.material"
     implementation "org.koin:koin-android:$vers.koin"
     implementation "org.koin:koin-androidx-scope:$vers.koin"
     implementation "org.koin:koin-androidx-viewmodel:$vers.koin"
@@ -49,6 +51,8 @@ dependencies {
     implementation "com.jakewharton.rxbinding3:rxbinding-appcompat:$vers.rxjava.binding"
     implementation "com.jakewharton.rxbinding3:rxbinding-recyclerview:$vers.rxjava.binding"
     implementation "com.jakewharton.rxbinding3:rxbinding-swiperefreshlayout:$vers.rxjava.binding"
+    implementation "com.google.android.exoplayer:exoplayer:$vers.exoplayer"
+    implementation "com.airbnb.android:lottie:$vers.lottie"
 
     implementation "com.akaita.java:rxjava2-debug:$vers.rxjava.debug"
     debugImplementation "com.squareup.leakcanary:leakcanary-android:$vers.leakcanary"

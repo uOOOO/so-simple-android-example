@@ -1,5 +1,7 @@
 package com.uoooo.mvvm.example.domain.model
 
+import java.io.Serializable
+
 typealias MovieModel = Movie
 
 const val INVALID_ID = -1
@@ -18,4 +20,4 @@ data class Movie(
     val adult: Boolean = false,
     val overview: String?,
     val releaseDate: String?
-)
+) : Serializable

@@ -12,6 +12,7 @@ import com.uoooo.mvvm.example.GlideApp
 import com.uoooo.mvvm.example.R
 import com.uoooo.mvvm.example.data.ServerConfig
 import com.uoooo.mvvm.example.domain.model.Movie
+import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import io.reactivex.Observer
 import kotlinx.android.synthetic.main.recyclerview_item_movie.view.*
 
@@ -46,7 +47,7 @@ class PopularMovieAdapter(private val itemClickObserver: Observer<Movie>) :
         fun bind(movie: Movie, itemClickObserver: Observer<Movie>) {
             movie.run {
                 GlideApp.with(posterImage)
-                    .load("${ServerConfig.IMAGE_BASE_URL}/${ServerConfig.ImageSize.NORMAL}/$posterPath")
+                    .load(getPosterImageUrl(posterPath, ServerConfig.ImageSize.NORMAL))
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(posterImage)
