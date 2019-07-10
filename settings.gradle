@@ -1,2 +1,2 @@
 include ':app', ':domain', ':data'
-rootProject.name='MVVM Example'
+rootProject.name='So Simple Android Example'

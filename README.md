@@ -1,4 +1,4 @@
-# MVVM Example
+# So Simple Android Example
 ## TMDB API key
 To run this example, TMDB API key must be set in local.properties.
 ```
