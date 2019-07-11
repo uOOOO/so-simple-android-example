@@ -55,9 +55,11 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:gravity="center"
         android:background="@color/exo_error_message_background_color"
-        android:padding="16dp"/>
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textStyle="bold" />
 
     <FrameLayout android:id="@id/exo_ad_overlay"
         android:layout_width="match_parent"

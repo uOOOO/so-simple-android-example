@@ -3,6 +3,7 @@ package com.uoooo.mvvm.example.ui.detail
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,6 +56,8 @@ class DetailFragment : Fragment() {
 
         playerView.useController = false
         playerView.controllerShowTimeoutMs = 1500
+        // TODO : error message
+        playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
 
         loadVideoData(movie.id)
     }
@@ -74,7 +77,7 @@ class DetailFragment : Fragment() {
                     playerStart()
                 }, {
                     it.printEnhancedStackTrace()
-                    // TODO : show error message
+                    playerError()
                 })
                 .disposeBy(onDestroy)
         }
@@ -97,6 +100,15 @@ class DetailFragment : Fragment() {
 
     private fun playerRelease() {
         playManager.release()
+    }
+
+    private fun playerError() {
+        playManager.pause()
+        playerView.hideController()
+        playerView.useController = false
+        // TODO : error message
+        playerView.exo_error_message.text = "Error"
+        playerView.exo_error_message.visibility = View.VISIBLE
     }
 
     private fun bindPlayerListeners() {
@@ -133,6 +145,7 @@ class DetailFragment : Fragment() {
         when (event) {
             is ExoPlayerEventPlayerStateChanged -> onPlayerStateChanged(event)
             is ExoPlayerEventSeekProcessed -> playerStart()
+            is ExoPlayerEventPlayerError -> playerError()
         }
     }
 
@@ -140,6 +153,9 @@ class DetailFragment : Fragment() {
         Log.d(TAG, "onPlayerStateChanged() event = $event")
         when (event.playbackState) {
             Player.STATE_READY -> {
+                if (!event.playWhenReady) {
+                    return
+                }
                 hideBackdropImage()
                 playerView.useController = true
                 playerView.controllerHideOnTouch = true
