@@ -161,7 +161,6 @@ class DetailFragment : Fragment() {
                 playerView.controllerHideOnTouch = true
             }
             Player.STATE_ENDED -> {
-                listenerDisposer.dispose()
                 playerPause()
                 showBackdropImage()
                 playerView.controllerHideOnTouch = false
@@ -170,6 +169,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun onExoPlayerVideoListener(event: ExoPlayerVideo) {
+        Log.d(TAG, "onExoPlayerVideoListener() event = $event")
         when (event) {
             is ExoPlayerVideoRenderedFirstFrame -> onRenderedFirstFrame()
         }
