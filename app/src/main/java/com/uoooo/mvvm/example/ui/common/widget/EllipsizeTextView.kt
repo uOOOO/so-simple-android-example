@@ -10,11 +10,8 @@ class EllipsizeTextView @JvmOverloads constructor(context: Context?, attrs: Attr
 
     init {
         addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
-            paint.fontMetrics.apply {
-                val lineHeight = this.bottom - this.top + this.leading
-                maxLines = (height / lineHeight).toInt()
-                ellipsize = TextUtils.TruncateAt.END
-            }
+            maxLines = (height / lineHeight)
+            ellipsize = TextUtils.TruncateAt.END
         }
     }
 
