@@ -48,7 +48,7 @@ class MovieViewModel(application: Application, private val repository: MovieRepo
                         return
                     }
                     try {
-                        val downloadUrl = ytFiles?.get(137)?.url ?: ytFiles?.get(136)?. url
+                        val downloadUrl = ytFiles?.get(22)?.url
                         if (!it.isDisposed) it.onSuccess(Uri.parse(downloadUrl))
                     } catch (e: Exception) {
                         if (!it.isDisposed) it.onError(RuntimeException("Didn't extract Youtube link."))
