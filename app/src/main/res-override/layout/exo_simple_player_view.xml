@@ -41,7 +41,7 @@
     <ImageView android:id="@+id/exo_backdrop"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitXY"
+        android:scaleType="centerCrop"
         android:tint="#949494"
         android:tintMode="multiply" />
 
