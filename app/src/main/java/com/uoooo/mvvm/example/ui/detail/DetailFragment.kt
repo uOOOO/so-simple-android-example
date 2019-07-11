@@ -70,7 +70,8 @@ class DetailFragment : Fragment() {
                 .flatMap { movieViewModel.getYoutubeLink(context, it[0].key) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({uri ->
-                    playerStart(uri)
+                    playerPrepare(uri)
+                    playerStart()
                 }, {
                     it.printEnhancedStackTrace()
                     // TODO : show error message
@@ -79,12 +80,15 @@ class DetailFragment : Fragment() {
         }
     }
 
-    private fun playerStart(uri: Uri) {
+    private fun playerPrepare(uri: Uri) {
         context?.let { context ->
             playManager.prepare(context, playerView, null, uri, null)
-            playManager.start()
             bindPlayerListeners()
         }
+    }
+
+    private fun playerStart() {
+        playManager.start()
     }
 
     private fun playerPause() {
@@ -128,6 +132,7 @@ class DetailFragment : Fragment() {
         Log.d(TAG, "onExoPlayerEventListener() event = $event")
         when (event) {
             is ExoPlayerEventPlayerStateChanged -> onPlayerStateChanged(event)
+            is ExoPlayerEventSeekProcessed -> playerStart()
         }
     }
 

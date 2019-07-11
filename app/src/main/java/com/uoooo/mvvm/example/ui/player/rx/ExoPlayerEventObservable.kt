@@ -108,7 +108,7 @@ private class ExoPlayerEventObservable(
 
         override fun onSeekProcessed() {
             if (!isDisposed) {
-                observer.onNext(ExoPlayerSeekProcessed)
+                observer.onNext(ExoPlayerEventSeekProcessed)
             }
         }
 
@@ -160,4 +160,4 @@ data class ExoPlayerEventPlaybackParametersChanged(
     val playbackParameters: PlaybackParameters?
 ) : ExoPlayerEvent()
 
-object ExoPlayerSeekProcessed : ExoPlayerEvent()
+object ExoPlayerEventSeekProcessed : ExoPlayerEvent()
