@@ -19,34 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
+        app:controller_layout_id="@layout/exo_player_control_view_custom"
         app:layout_constraintDimensionRatio="16:9"
         app:show_buffering="when_playing" />
 
-    <!--<ImageView-->
-        <!--android:id="@+id/posterImage"-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="0dp"-->
-        <!--android:layout_margin="15dp"-->
-        <!--android:background="@android:color/black"-->
-        <!--android:contentDescription="@null"-->
-        <!--android:elevation="5dp"-->
-        <!--android:scaleType="fitXY"-->
-        <!--app:layout_constraintBottom_toBottomOf="@id/playerView"-->
-        <!--app:layout_constraintDimensionRatio="1:1.5"-->
-        <!--app:layout_constraintStart_toStartOf="@id/playerView"-->
-        <!--app:layout_constraintTop_toTopOf="@id/playerView"-->
-        <!--tools:srcCompat="@tools:sample/avatars" />-->
-
-    <com.airbnb.lottie.LottieAnimationView
-        android:id="@+id/playButton"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_margin="15dp"
-        app:layout_constraintBottom_toBottomOf="@id/playerView"
-        app:layout_constraintEnd_toEndOf="@id/playerView"
-        app:layout_constraintStart_toStartOf="@id/playerView"
-        app:layout_constraintTop_toTopOf="@id/playerView"
-        app:lottie_autoPlay="true"
-        app:lottie_loop="true"
-        app:lottie_rawRes="@raw/play_button" />
 </androidx.constraintlayout.motion.widget.MotionLayout>

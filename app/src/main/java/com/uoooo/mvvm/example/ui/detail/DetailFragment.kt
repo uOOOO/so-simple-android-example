@@ -11,7 +11,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.util.EventLogger
-import com.jakewharton.rxbinding3.view.clicks
 import com.uoooo.mvvm.example.GlideApp
 import com.uoooo.mvvm.example.R
 import com.uoooo.mvvm.example.data.ServerConfig
@@ -55,7 +54,7 @@ class DetailFragment : Fragment() {
             .into(playerView.exo_backdrop)
 
         playerView.useController = false
-        playerView.controllerShowTimeoutMs = 1000
+        playerView.controllerShowTimeoutMs = 1500
 
         loadVideoData(movie.id)
     }
@@ -71,8 +70,7 @@ class DetailFragment : Fragment() {
                 .flatMap { movieViewModel.getYoutubeLink(context, it[0].key) }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({uri ->
-                    bindPlayButton(uri)
-                    showInteractionView()
+                    playerStart(uri)
                 }, {
                     it.printEnhancedStackTrace()
                     // TODO : show error message
@@ -83,8 +81,6 @@ class DetailFragment : Fragment() {
 
     private fun playerStart(uri: Uri) {
         context?.let { context ->
-            hideInteractionView()
-            playerView.useController = true
             playManager.prepare(context, playerView, null, uri, null)
             playManager.start()
             bindPlayerListeners()
@@ -99,28 +95,12 @@ class DetailFragment : Fragment() {
         playManager.release()
     }
 
-    private fun bindPlayButton(uri: Uri) {
-        playButton.clicks()
-            .subscribe { playerStart(uri) }
-            .disposeBy(onDestroy)
-    }
-
     private fun bindPlayerListeners() {
         playManager.addAnalyticsListener(EventLogger(playManager.trackSelector))
         playManager.player?.apply {
             listenerDisposer += events().subscribe { onExoPlayerEventListener(it) }
             listenerDisposer += videos().subscribe { onExoPlayerVideoListener(it) }
         }
-    }
-
-    private fun showInteractionView() {
-        playButton.resumeAnimation()
-        interactionGroup.visibility = View.VISIBLE
-    }
-
-    private fun hideInteractionView() {
-        interactionGroup.visibility = View.GONE
-        playButton.pauseAnimation()
     }
 
     private fun showBackdropImage() {
@@ -145,6 +125,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun onExoPlayerEventListener(event: ExoPlayerEvent) {
+        Log.d(TAG, "onExoPlayerEventListener() event = $event")
         when (event) {
             is ExoPlayerEventPlayerStateChanged -> onPlayerStateChanged(event)
         }
@@ -155,13 +136,14 @@ class DetailFragment : Fragment() {
         when (event.playbackState) {
             Player.STATE_READY -> {
                 hideBackdropImage()
-                hideInteractionView()
+                playerView.useController = true
                 playerView.controllerHideOnTouch = true
             }
             Player.STATE_ENDED -> {
                 listenerDisposer.dispose()
-                playerRelease()
+                playerPause()
                 showBackdropImage()
+                playerView.controllerHideOnTouch = false
             }
         }
     }
@@ -173,7 +155,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun onRenderedFirstFrame() {
-        hideInteractionView()
+
     }
 
     companion object {
