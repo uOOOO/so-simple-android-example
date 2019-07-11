@@ -144,7 +144,7 @@ class DetailFragment : Fragment() {
         Log.d(TAG, "onExoPlayerEventListener() event = $event")
         when (event) {
             is ExoPlayerEventPlayerStateChanged -> onPlayerStateChanged(event)
-            is ExoPlayerEventSeekProcessed -> playerStart()
+//            is ExoPlayerEventSeekProcessed -> playerStart()
             is ExoPlayerEventPlayerError -> playerError()
         }
     }
