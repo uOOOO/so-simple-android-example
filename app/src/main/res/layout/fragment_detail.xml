@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:background="@android:color/black"
-        app:controller_layout_id="@layout/exo_player_control_view_custom"
+        app:controller_layout_id="@layout/exo_player_control_view"
         app:layout_constraintDimensionRatio="16:9"
         app:show_buffering="when_playing" />
 
