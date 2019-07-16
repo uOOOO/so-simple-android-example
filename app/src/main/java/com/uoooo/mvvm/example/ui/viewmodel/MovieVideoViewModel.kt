@@ -4,37 +4,19 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.SparseArray
-import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
-import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.domain.model.Video
 import com.uoooo.mvvm.example.domain.repository.MovieRepository
 import com.uoooo.mvvm.example.ui.common.BaseViewModel
-import com.uoooo.mvvm.example.ui.movie.source.PopularMovieDataSourceFactory
-import io.reactivex.BackpressureStrategy
-import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 // TODO : need view state - loading, error...
-class MovieViewModel(application: Application, private val repository: MovieRepository) : BaseViewModel(application) {
-    // TODO : need DI?
-    private val popularMovieDataSourceFactory by lazy {
-        PopularMovieDataSourceFactory(repository)
-    }
-
-    fun getPopularMovieList(): Flowable<PagedList<Movie>> {
-        val config = PagedList.Config.Builder()
-            .setPageSize(10)
-            .setEnablePlaceholders(false)
-            .build()
-        return RxPagedListBuilder(popularMovieDataSourceFactory, config)
-            .buildFlowable(BackpressureStrategy.LATEST)
-    }
+class MovieVideoViewModel(application: Application, private val repository: MovieRepository) :
+    BaseViewModel(application) {
 
     fun getYouTubeVideo(context: Context, id: Int): Single<Uri> {
         return repository.getVideos(id)
@@ -71,10 +53,5 @@ class MovieViewModel(application: Application, private val repository: MovieRepo
         override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
             listener.onExtractionComplete(ytFiles, videoMeta)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        popularMovieDataSourceFactory.onCleared()
     }
 }

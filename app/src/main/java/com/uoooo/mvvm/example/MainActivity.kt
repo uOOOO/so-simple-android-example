@@ -8,7 +8,7 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.ui.detail.DetailFragment
 import com.uoooo.mvvm.example.ui.movie.PopularMovieAdapter
-import com.uoooo.mvvm.example.ui.viewmodel.MovieViewModel
+import com.uoooo.mvvm.example.ui.viewmodel.MovieListViewModel
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.ext.getFullName
 
 class MainActivity : AppCompatActivity() {
-    private val movieViewModel: MovieViewModel by viewModel()
+    private val movieListViewModel: MovieListViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             }
             .disposeBy(onDestroy)
 
-        movieViewModel.getPopularMovieList()
+        movieListViewModel.getPopularMovieList()
             .subscribe {
                 adapter.submitList(it)
                 movieListSwipeRefresh.isRefreshing = false

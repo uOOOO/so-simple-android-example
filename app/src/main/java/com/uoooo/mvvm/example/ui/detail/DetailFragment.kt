@@ -20,7 +20,7 @@ import com.uoooo.mvvm.example.extension.printEnhancedStackTrace
 import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
-import com.uoooo.mvvm.example.ui.viewmodel.MovieViewModel
+import com.uoooo.mvvm.example.ui.viewmodel.MovieVideoViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
-    private val movieViewModel: MovieViewModel by viewModel()
+    private val movieVideoViewModel: MovieVideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
     }
@@ -61,7 +61,7 @@ class DetailFragment : Fragment() {
 
     private fun loadVideoData(id: Int) {
         context?.let { context ->
-            movieViewModel.getYouTubeVideo(context, id)
+            movieVideoViewModel.getYouTubeVideo(context, id)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ uri ->
                     playerPrepare(uri)
