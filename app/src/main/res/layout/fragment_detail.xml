@@ -1,23 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#303030"
-    app:layoutDescription="@xml/scene_detail"
     tools:showPaths="true">
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/playerMotionContainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="@android:color/white"
-        app:layout_constrainedWidth="true"
-        app:layout_constraintDimensionRatio="16:9"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <com.uoooo.mvvm.example.ui.common.widget.CustomPlayerView
         android:id="@+id/playerView"
@@ -25,11 +13,11 @@
         android:layout_height="0dp"
         android:background="@android:color/black"
         app:controller_layout_id="@layout/exo_player_control_view"
-        app:layout_constraintBottom_toBottomOf="@id/playerMotionContainer"
-        app:layout_constraintEnd_toEndOf="@id/playerMotionContainer"
-        app:layout_constraintStart_toStartOf="@id/playerMotionContainer"
-        app:layout_constraintTop_toTopOf="@id/playerMotionContainer"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:resize_mode="fixed_width"
         app:show_buffering="when_playing" />
 
-</androidx.constraintlayout.motion.widget.MotionLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
