@@ -4,13 +4,18 @@ import androidx.paging.DataSource
 import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.domain.repository.MovieRepository
 import com.uoooo.mvvm.example.ui.common.BaseDataSourceFactory
+import io.reactivex.Observable
 
-class PopularMovieDataSourceFactory(private val repository: MovieRepository) :
-    BaseDataSourceFactory<Int, Movie>() {
-    private lateinit var popularMovieDataSource: PopularMovieDataSource
+class RecommendationMovieDataSourceFactory(
+    private val repository: MovieRepository,
+    private val id: Int,
+    override val startPage: Int,
+    override val endPage: Int
+) : BaseDataSourceFactory<Movie>(startPage, endPage) {
+    private lateinit var popularMovieDataSource: RecommendationsMovieDataSource
 
     override fun create(): DataSource<Int, Movie> {
-        popularMovieDataSource = PopularMovieDataSource(repository)
+        popularMovieDataSource = RecommendationsMovieDataSource(repository, id, startPage, endPage)
         return popularMovieDataSource
     }
 

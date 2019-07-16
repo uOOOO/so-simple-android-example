@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.ui.detail.DetailFragment
-import com.uoooo.mvvm.example.ui.movie.PopularMovieAdapter
+import com.uoooo.mvvm.example.ui.movie.MovieAdapter
 import com.uoooo.mvvm.example.ui.viewmodel.MovieListViewModel
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
             }.disposeBy(onDestroy)
         }
 
-        val adapter = PopularMovieAdapter(itemClickObserver)
+        val adapter = MovieAdapter(itemClickObserver)
 
         movieList.apply {
             setHasFixedSize(true)
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
             }
             .disposeBy(onDestroy)
 
-        movieListViewModel.getPopularMovieList()
+        movieListViewModel.getPopularList()
             .subscribe {
                 adapter.submitList(it)
                 movieListSwipeRefresh.isRefreshing = false

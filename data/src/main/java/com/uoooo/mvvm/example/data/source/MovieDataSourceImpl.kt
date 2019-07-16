@@ -13,4 +13,8 @@ class MovieDataSourceImpl constructor(private val remote: MovieDataSourceRemote)
     override fun getVideos(id: Int): Single<List<Video>> {
         return remote.getVideos(id)
     }
+
+    override fun getRecommendations(id: Int, page: Int): Single<List<Movie>> {
+        return remote.getRecommendations(id, page)
+    }
 }

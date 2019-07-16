@@ -10,7 +10,7 @@ import io.reactivex.Single
 class MovieRepositoryImpl constructor(
     private val dataSource: MovieDataSource
 ) : MovieRepository {
-    override fun getPopularMovie(page: Int): Single<List<Movie>> {
+    override fun getPopular(page: Int): Single<List<Movie>> {
         return dataSource.getPopularMovie(page)
             .map { it ->
                 it.asSequence()
@@ -23,6 +23,17 @@ class MovieRepositoryImpl constructor(
 
     override fun getVideos(id: Int): Single<List<Video>> {
         return dataSource.getVideos(id)
+            .map { it ->
+                it.asSequence()
+                    .map { it.mapToModel() }
+                    .filter { it != null }
+                    .map { it!! }
+                    .toList()
+            }
+    }
+
+    override fun getRecommendations(id: Int, page: Int): Single<List<Movie>> {
+        return dataSource.getRecommendations(id, page)
             .map { it ->
                 it.asSequence()
                     .map { it.mapToModel() }

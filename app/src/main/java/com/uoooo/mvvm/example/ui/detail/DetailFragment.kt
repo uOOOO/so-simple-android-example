@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.exoplayer2.Player
@@ -18,8 +19,10 @@ import com.uoooo.mvvm.example.data.ServerConfig
 import com.uoooo.mvvm.example.domain.model.Movie
 import com.uoooo.mvvm.example.extension.printEnhancedStackTrace
 import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
+import com.uoooo.mvvm.example.ui.movie.MovieAdapter
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
+import com.uoooo.mvvm.example.ui.viewmodel.MovieListViewModel
 import com.uoooo.mvvm.example.ui.viewmodel.MovieVideoViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.sellmair.disposer.Disposer
@@ -30,6 +33,7 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
+    private val movieListViewModel: MovieListViewModel by viewModel()
     private val movieVideoViewModel: MovieVideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
@@ -57,6 +61,25 @@ class DetailFragment : Fragment() {
         playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
 
         loadVideoData(movie.id)
+
+
+        val adapter = MovieAdapter(null)
+
+        recommendationList.apply {
+            setHasFixedSize(true)
+            this.adapter = adapter
+            this.layoutManager = LinearLayoutManager(context)
+        }
+        loadRecommendations(movie.id, adapter)
+    }
+
+    private fun loadRecommendations(id: Int, adapter: MovieAdapter) {
+        movieListViewModel.getRecommendationList(id)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                adapter.submitList(it)
+            }
+            .disposeBy(onDestroy)
     }
 
     private fun loadVideoData(id: Int) {

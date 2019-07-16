@@ -16,8 +16,8 @@ import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import io.reactivex.Observer
 import kotlinx.android.synthetic.main.recyclerview_item_movie.view.*
 
-class PopularMovieAdapter(private val itemClickObserver: Observer<Movie>) :
-    PagedListAdapter<Movie, PopularMovieAdapter.PopularMovieViewHolder>(DIFF_CALLBACK) {
+class MovieAdapter(private val itemClickObserver: Observer<Movie>?) :
+    PagedListAdapter<Movie, MovieAdapter.PopularMovieViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularMovieViewHolder {
         return PopularMovieViewHolder(parent)
@@ -44,7 +44,7 @@ class PopularMovieAdapter(private val itemClickObserver: Observer<Movie>) :
         private val releaseDateText = itemView.releaseDateText
         private val overviewText = itemView.overviewText
 
-        fun bind(movie: Movie, itemClickObserver: Observer<Movie>) {
+        fun bind(movie: Movie, itemClickObserver: Observer<Movie>?) {
             movie.run {
                 GlideApp.with(posterImage)
                     .load(getPosterImageUrl(posterPath, ServerConfig.ImageSize.NORMAL))
@@ -61,9 +61,11 @@ class PopularMovieAdapter(private val itemClickObserver: Observer<Movie>) :
                     voteAverageText.text = String.format("%d%%", this)
                 }
 
-                itemRootLayout.clicks()
-                    .map { movie }
-                    .subscribe(itemClickObserver)
+                itemClickObserver?.apply {
+                    itemRootLayout.clicks()
+                        .map { movie }
+                        .subscribe(this)
+                }
             }
         }
     }

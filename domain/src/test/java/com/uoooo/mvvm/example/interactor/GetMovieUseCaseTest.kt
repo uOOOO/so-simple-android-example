@@ -19,11 +19,11 @@ class GetMovieUseCaseTest {
 
     @Test
     fun getPopularMovie() {
-        every { movieRepository.getPopularMovie(any()) } returns Single.just(mockk(relaxed = true))
+        every { movieRepository.getPopular(any()) } returns Single.just(mockk(relaxed = true))
         getMovieUseCase.getPopularMovie(1)
             .test()
             .await()
             .assertComplete()
-        verify { movieRepository.getPopularMovie(any()) }
+        verify { movieRepository.getPopular(any()) }
     }
 }

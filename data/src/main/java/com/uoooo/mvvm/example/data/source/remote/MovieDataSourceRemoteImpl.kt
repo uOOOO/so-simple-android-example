@@ -15,4 +15,9 @@ class MovieDataSourceRemoteImpl constructor(private val movieService: MovieServi
         return movieService.getVideos(id)
             .map { it.results }
     }
+
+    override fun getRecommendations(id: Int, page: Int): Single<List<Movie>> {
+        return movieService.getRecommendations(id, page)
+            .map { it.results }
+    }
 }

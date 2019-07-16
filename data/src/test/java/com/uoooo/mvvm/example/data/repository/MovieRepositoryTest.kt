@@ -5,7 +5,6 @@ import com.uoooo.mvvm.example.data.source.MovieDataSourceImpl
 import com.uoooo.mvvm.example.data.source.remote.MovieDataSourceRemote
 import com.uoooo.mvvm.example.data.source.remote.MovieDataSourceRemoteImpl
 import com.uoooo.mvvm.example.data.source.remote.api.MovieService
-import com.uoooo.mvvm.example.data.source.remote.response.MoviePopularResponse
 import com.uoooo.mvvm.example.domain.repository.MovieRepository
 import io.mockk.*
 import io.reactivex.Single
@@ -26,7 +25,7 @@ class MovieRepositoryTest {
     @Test
     fun getPopularMovie() {
         every { movieService.getPopularMovie(any()) } returns Single.just(mockk(relaxed = true))
-        movieRepository.getPopularMovie(1)
+        movieRepository.getPopular(1)
             .test()
             .await()
             .assertComplete()

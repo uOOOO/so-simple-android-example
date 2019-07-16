@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">So Simple Android Example</string>
+    <string name="recommendations">Recommendations</string>
 </resources>

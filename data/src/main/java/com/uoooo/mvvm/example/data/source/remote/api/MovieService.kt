@@ -1,6 +1,7 @@
 package com.uoooo.mvvm.example.data.source.remote.api
 
 import com.uoooo.mvvm.example.data.source.remote.response.MoviePopularResponse
+import com.uoooo.mvvm.example.data.source.remote.response.MovieRecommendationsResponse
 import com.uoooo.mvvm.example.data.source.remote.response.VideosResponse
 import io.reactivex.Single
 import retrofit2.http.GET
@@ -13,4 +14,7 @@ interface MovieService {
 
     @GET("movie/{id}/videos")
     fun getVideos(@Path("id") id: Int): Single<VideosResponse>
+
+    @GET("movie/{id}/recommendations")
+    fun getRecommendations(@Path("id") id: Int, @Query("page") page: Int): Single<MovieRecommendationsResponse>
 }
