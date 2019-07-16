@@ -16,13 +16,11 @@ import com.uoooo.mvvm.example.GlideApp
 import com.uoooo.mvvm.example.R
 import com.uoooo.mvvm.example.data.ServerConfig
 import com.uoooo.mvvm.example.domain.model.Movie
-import com.uoooo.mvvm.example.domain.model.Video
 import com.uoooo.mvvm.example.extension.printEnhancedStackTrace
 import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
 import com.uoooo.mvvm.example.ui.viewmodel.MovieViewModel
-import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
@@ -30,7 +28,6 @@ import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
 import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class DetailFragment : Fragment() {
     private val movieViewModel: MovieViewModel by viewModel()
@@ -64,15 +61,9 @@ class DetailFragment : Fragment() {
 
     private fun loadVideoData(id: Int) {
         context?.let { context ->
-            movieViewModel.getVideos(id)
-                .flatMap { it ->
-                    Observable.fromIterable(it)
-                        .filter { it.site == Video.Site.YOUTUBE }
-                        .toList()
-                }
-                .flatMap { movieViewModel.getYoutubeLink(context, it[0].key) }
+            movieViewModel.getYouTubeVideo(context, id)
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({uri ->
+                .subscribe({ uri ->
                     playerPrepare(uri)
                     playerStart()
                 }, {

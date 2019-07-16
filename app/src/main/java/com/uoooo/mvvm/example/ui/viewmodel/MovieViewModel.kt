@@ -16,6 +16,7 @@ import com.uoooo.mvvm.example.ui.common.BaseViewModel
 import com.uoooo.mvvm.example.ui.movie.source.PopularMovieDataSourceFactory
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
+import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
@@ -35,12 +36,16 @@ class MovieViewModel(application: Application, private val repository: MovieRepo
             .buildFlowable(BackpressureStrategy.LATEST)
     }
 
-    fun getVideos(id: Int): Single<List<Video>> {
+    fun getYouTubeVideo(context: Context, id: Int): Single<Uri> {
         return repository.getVideos(id)
+            .flatMapObservable { Observable.fromIterable(it) }
+            .filter { it.site == Video.Site.YOUTUBE }
+            .toList()
+            .flatMap { getYoutubeLink(context, it[0].key) }
             .subscribeOn(Schedulers.io())
     }
 
-    fun getYoutubeLink(context: Context, key: String): Single<Uri> {
+    private fun getYoutubeLink(context: Context, key: String): Single<Uri> {
         return Single.create {
             CustomYouTubeExtractor(context, object : CustomYouTubeExtractor.Listener {
                 override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
