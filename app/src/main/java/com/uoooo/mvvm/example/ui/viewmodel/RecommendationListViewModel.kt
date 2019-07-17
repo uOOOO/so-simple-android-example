@@ -16,10 +16,10 @@ class RecommendationListViewModel(application: Application, private val reposito
     private lateinit var pagedList: Subject<PagedList<Movie>>
 
     fun getRecommendationList(id: Int, startPage: Int, endPage: Int): Observable<PagedList<Movie>> {
-        if (!::pagedList.isInitialized) {
+//        if (!::pagedList.isInitialized) {
             pagedList = createPagedRecommendationList(id, startPage, endPage)
                 .subscribeWith(BehaviorSubject.create())
-        }
+//        }
         return pagedList
     }
 

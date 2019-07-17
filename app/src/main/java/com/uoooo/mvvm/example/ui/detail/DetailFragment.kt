@@ -26,6 +26,7 @@ import com.uoooo.mvvm.example.ui.viewmodel.MovieVideoViewModel
 import com.uoooo.mvvm.example.ui.viewmodel.RecommendationListViewModel
 import com.uoooo.mvvm.example.ui.viewmodel.state.PagingState
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
@@ -70,7 +71,21 @@ class DetailFragment : Fragment() {
     }
 
     private fun initRecommendationList(id: Int) {
-        val adapter = MovieAdapter(null)
+        val itemClickObserver = PublishSubject.create<Movie>().apply {
+            subscribe {
+                onDestroy.dispose()
+                playerRelease()
+
+                arguments = Bundle().apply {
+                    putSerializable(BUNDLE_OBJECT, it)
+                }
+                fragmentManager?.run {
+                    this.beginTransaction().detach(this@DetailFragment).attach(this@DetailFragment).commit()
+                }
+            }.disposeBy(onDestroy)
+        }
+
+        val adapter = MovieAdapter(itemClickObserver)
 
         recommendationList.apply {
             setHasFixedSize(true)
