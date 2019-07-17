@@ -123,18 +123,16 @@ class DetailFragment : Fragment() {
     }
 
     private fun loadVideoData(id: Int) {
-        context?.let { context ->
-            movieVideoViewModel.getYouTubeVideo(context, id)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ uri ->
-                    playerPrepare(uri)
-                    playerStart()
-                }, {
-                    it.printEnhancedStackTrace()
-                    playerError()
-                })
-                .disposeBy(onDestroy)
-        }
+        movieVideoViewModel.getYouTubeVideo(id)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ uri ->
+                playerPrepare(uri)
+                playerStart()
+            }, {
+                it.printEnhancedStackTrace()
+                playerError()
+            })
+            .disposeBy(onDestroy)
     }
 
     private fun playerPrepare(uri: Uri) {

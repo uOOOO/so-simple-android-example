@@ -18,18 +18,18 @@ import io.reactivex.schedulers.Schedulers
 class MovieVideoViewModel(application: Application, private val repository: MovieRepository) :
     BaseViewModel(application) {
 
-    fun getYouTubeVideo(context: Context, id: Int): Single<Uri> {
+    fun getYouTubeVideo(id: Int): Single<Uri> {
         return repository.getVideos(id)
             .flatMapObservable { Observable.fromIterable(it) }
             .filter { it.site == Video.Site.YOUTUBE }
             .toList()
-            .flatMap { getYoutubeLink(context, it[0].key) }
+            .flatMap { getYoutubeLink(it[0].key) }
             .subscribeOn(Schedulers.io())
     }
 
-    private fun getYoutubeLink(context: Context, key: String): Single<Uri> {
+    private fun getYoutubeLink(key: String): Single<Uri> {
         return Single.create {
-            CustomYouTubeExtractor(context, object : CustomYouTubeExtractor.Listener {
+            CustomYouTubeExtractor(getApplication(), object : CustomYouTubeExtractor.Listener {
                 override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
                     if (it.isDisposed) {
                         return
