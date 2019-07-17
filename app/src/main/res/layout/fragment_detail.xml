@@ -24,6 +24,7 @@
         android:id="@+id/recommendationText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_marginStart="5dp"
         android:layout_marginEnd="5dp"
         android:gravity="start"
@@ -31,9 +32,11 @@
         android:textColor="@android:color/white"
         android:textSize="17sp"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/playerView" />
+        app:layout_constraintTop_toBottomOf="@id/playerView"
+        tools:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recommendationList"
@@ -43,5 +46,19 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/recommendationText" />
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progressView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/playerView"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/the_nyan_cat"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

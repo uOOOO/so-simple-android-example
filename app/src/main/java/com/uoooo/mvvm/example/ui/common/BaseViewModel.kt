@@ -14,8 +14,6 @@ open class BaseViewModel(application: Application) : AndroidViewModel(applicatio
     @CallSuper
     override fun onCleared() {
         super.onCleared()
-        if (!disposer.isDisposed) {
-            disposer.dispose()
-        }
+        disposer.dispose()
     }
 }

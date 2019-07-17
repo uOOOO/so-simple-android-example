@@ -5,12 +5,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.paging.PageKeyedDataSource
-import io.reactivex.disposables.CompositeDisposable
+import com.uoooo.mvvm.example.ui.viewmodel.state.PagingState
+import io.reactivex.subjects.Subject
 import io.sellmair.disposer.Disposer
 
 abstract class BasePageKeyedDataSource<Value>(
     open val startPage: Int,
-    open val endPage: Int
+    open val endPage: Int,
+    open val pagingState: Subject<PagingState>
 ) : PageKeyedDataSource<Int, Value>(), LifecycleObserver {
     @Suppress("MemberVisibilityCanBePrivate")
     protected val disposer by lazy {

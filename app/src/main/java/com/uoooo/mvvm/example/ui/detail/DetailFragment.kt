@@ -22,8 +22,9 @@ import com.uoooo.mvvm.example.ui.common.getPosterImageUrl
 import com.uoooo.mvvm.example.ui.movie.MovieAdapter
 import com.uoooo.mvvm.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.mvvm.example.ui.player.rx.*
-import com.uoooo.mvvm.example.ui.viewmodel.MovieListViewModel
 import com.uoooo.mvvm.example.ui.viewmodel.MovieVideoViewModel
+import com.uoooo.mvvm.example.ui.viewmodel.RecommendationListViewModel
+import com.uoooo.mvvm.example.ui.viewmodel.state.PagingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
@@ -33,7 +34,7 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
-    private val movieListViewModel: MovieListViewModel by viewModel()
+    private val recommendationListViewModel: RecommendationListViewModel by viewModel()
     private val movieVideoViewModel: MovieVideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
@@ -49,8 +50,15 @@ class DetailFragment : Fragment() {
 
         val movie: Movie = (arguments?.getSerializable(BUNDLE_OBJECT) ?: return) as Movie
 
+        initVideo(movie.backdropPath)
+        initRecommendationList(movie.id)
+
+        loadVideoData(movie.id)
+    }
+
+    private fun initVideo(backdropPath: String?) {
         GlideApp.with(playerView.exo_backdrop)
-            .load(getPosterImageUrl(movie.backdropPath, ServerConfig.ImageSize.NORMAL))
+            .load(getPosterImageUrl(backdropPath, ServerConfig.ImageSize.NORMAL))
             .transition(DrawableTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(playerView.exo_backdrop)
@@ -59,10 +67,9 @@ class DetailFragment : Fragment() {
         playerView.controllerShowTimeoutMs = 1500
         // TODO : error message
         playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
+    }
 
-        loadVideoData(movie.id)
-
-
+    private fun initRecommendationList(id: Int) {
         val adapter = MovieAdapter(null)
 
         recommendationList.apply {
@@ -70,12 +77,30 @@ class DetailFragment : Fragment() {
             this.adapter = adapter
             this.layoutManager = LinearLayoutManager(context)
         }
-        loadRecommendations(movie.id, adapter)
-    }
 
-    private fun loadRecommendations(id: Int, adapter: MovieAdapter) {
-        movieListViewModel.getRecommendationList(id)
-            .observeOn(AndroidSchedulers.mainThread())
+        recommendationListViewModel.networkState
+            .subscribe {
+                Log.d(TAG, "PagingState = $it")
+                when (it) {
+                    is PagingState.InitialLoading -> {
+                        progressView.visibility = View.VISIBLE
+                        recommendationText.visibility = View.GONE
+                    }
+                    is PagingState.Loading -> {
+
+                    }
+                    is PagingState.Loaded -> {
+                        progressView.visibility = View.GONE
+                        recommendationText.visibility = View.VISIBLE
+                    }
+                    is PagingState.Error -> {
+                        progressView.visibility = View.GONE
+                    }
+                }
+            }
+            .disposeBy(onDestroy)
+
+        recommendationListViewModel.getRecommendationList(id, 1, 1)
             .subscribe {
                 adapter.submitList(it)
             }
