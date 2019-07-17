@@ -192,7 +192,7 @@ class DetailFragment : Fragment() {
         Log.d(TAG, "onPlayerStateChanged() event = $event")
         when (event.playbackState) {
             Player.STATE_READY -> {
-                if (!event.playWhenReady) {
+                if (!isResumed) {
                     return
                 }
                 hideBackdropImage()
@@ -200,7 +200,6 @@ class DetailFragment : Fragment() {
                 playerView.controllerHideOnTouch = true
             }
             Player.STATE_ENDED -> {
-                playerPause()
                 showBackdropImage()
                 playerView.controllerHideOnTouch = false
             }
