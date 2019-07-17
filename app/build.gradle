@@ -7,7 +7,7 @@ android {
     compileSdkVersion vers.compileSdk
 
     defaultConfig {
-        applicationId "com.uooo.mvvm.example"
+        applicationId "com.uooo.simple.example"
         minSdkVersion vers.minSdk
         targetSdkVersion vers.compileSdk
         versionCode 1

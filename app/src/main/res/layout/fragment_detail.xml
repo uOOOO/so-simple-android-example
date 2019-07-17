@@ -7,7 +7,7 @@
     android:background="#303030"
     tools:showPaths="true">
 
-    <com.uoooo.mvvm.example.ui.common.widget.CustomPlayerView
+    <com.uoooo.simple.example.ui.common.widget.CustomPlayerView
         android:id="@+id/playerView"
         android:layout_width="0dp"
         android:layout_height="0dp"

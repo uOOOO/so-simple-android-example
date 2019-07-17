@@ -102,7 +102,7 @@
                 tools:text="June 19, 2015" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <com.uoooo.mvvm.example.ui.common.widget.EllipsizeTextView
+        <com.uoooo.simple.example.ui.common.widget.EllipsizeTextView
             android:id="@+id/overviewText"
             android:layout_width="0dp"
             android:layout_height="0dp"
