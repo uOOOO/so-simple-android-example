@@ -4,9 +4,10 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.AttributeSet
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatTextView
 
 class EllipsizeTextView @JvmOverloads constructor(context: Context?, attrs: AttributeSet? = null, defStyleAttr: Int = 0) :
-    TextView(context, attrs, defStyleAttr) {
+    AppCompatTextView(context, attrs, defStyleAttr) {
 
     init {
         addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->

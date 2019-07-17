@@ -1,5 +1,6 @@
 package com.uoooo.simple.example.ui.player.rx
 
+import android.annotation.SuppressLint
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.video.VideoListener
 import com.jakewharton.rxbinding3.internal.checkMainThread
@@ -11,6 +12,7 @@ fun SimpleExoPlayer.videos(): Observable<ExoPlayerVideo> {
     return ExoPlayerVideoObservable(this)
 }
 
+@SuppressLint("RestrictedApi")
 private class ExoPlayerVideoObservable(
     private val player: SimpleExoPlayer
 ) : Observable<ExoPlayerVideo>() {

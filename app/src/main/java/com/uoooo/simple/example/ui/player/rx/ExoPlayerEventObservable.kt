@@ -1,5 +1,6 @@
 package com.uoooo.simple.example.ui.player.rx
 
+import android.annotation.SuppressLint
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
@@ -12,6 +13,7 @@ fun SimpleExoPlayer.events(): Observable<ExoPlayerEvent> {
     return ExoPlayerEventObservable(this)
 }
 
+@SuppressLint("RestrictedApi")
 private class ExoPlayerEventObservable(
     private val player: SimpleExoPlayer
 ) : Observable<ExoPlayerEvent>() {
