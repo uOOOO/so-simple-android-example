@@ -1,5 +1,6 @@
 package com.uoooo.simple.example.ui.movie
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.paging.PagedListAdapter
@@ -45,6 +46,7 @@ class RecommendMovieAdapter(private val itemClickObserver: Observer<Movie>?) :
         private val overviewText = itemView.overviewText
 
         fun bind(movie: Movie, itemClickObserver: Observer<Movie>?) {
+            Log.d("#####", "bind")
             movie.run {
                 GlideApp.with(posterImage)
                     .load(getPosterImageUrl(posterPath, ServerConfig.ImageSize.NORMAL))
