@@ -9,7 +9,7 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
 import com.uoooo.simple.example.ui.movie.MovieAdapter
-import com.uoooo.simple.example.ui.viewmodel.PopularListViewModel
+import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
@@ -19,7 +19,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.ext.getFullName
 
 class MainActivity : AppCompatActivity() {
-    private val movieListViewModel: PopularListViewModel by viewModel()
+    private val popularMovieViewModel: PopularMovieViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,11 +51,11 @@ class MainActivity : AppCompatActivity() {
 
         movieListSwipeRefresh.refreshes()
             .subscribe {
-                movieListViewModel.invalidate(adapter)
+                popularMovieViewModel.invalidate(adapter)
             }
             .disposeBy(onDestroy)
 
-        movieListViewModel.networkState
+        popularMovieViewModel.networkState
             .subscribe {
                 Log.d(TAG, "PagingState = $it")
                 when (it) {
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
             .disposeBy(onDestroy)
 
-        movieListViewModel.getPopularList(1, 5)
+        popularMovieViewModel.getPopularList(1, 5)
             .subscribe {
                 adapter.submitList(it)
                 movieListSwipeRefresh.isRefreshing = false

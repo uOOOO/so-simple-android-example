@@ -7,24 +7,24 @@ import com.uoooo.simple.example.ui.common.BaseDataSourceFactory
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.subjects.Subject
 
-class PopularDataSourceFactory(
+class PopularMovieDataSourceFactory(
     private val repository: MovieRepository,
     override val startPage: Int,
     override val endPage: Int,
     override val pagingState: Subject<PagingState>
 ) : BaseDataSourceFactory<Movie>(startPage, endPage, pagingState) {
-    private lateinit var popularDataSource: PopularDataSource
+    private lateinit var popularMovieDataSource: PopularMovieDataSource
 
     override fun create(): DataSource<Int, Movie> {
-        popularDataSource = PopularDataSource(repository, startPage, endPage, pagingState)
-        return popularDataSource
+        popularMovieDataSource = PopularMovieDataSource(repository, startPage, endPage, pagingState)
+        return popularMovieDataSource
     }
 
     override fun invalidate() {
-        if (::popularDataSource.isInitialized) popularDataSource.invalidate()
+        if (::popularMovieDataSource.isInitialized) popularMovieDataSource.invalidate()
     }
 
     override fun onCleared() {
-        if (::popularDataSource.isInitialized) popularDataSource.onCleared()
+        if (::popularMovieDataSource.isInitialized) popularMovieDataSource.onCleared()
     }
 }

@@ -15,7 +15,7 @@ import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 // TODO : need view state - loading, error...
-class MovieVideoViewModel(application: Application, private val repository: MovieRepository) :
+class VideoViewModel(application: Application, private val repository: MovieRepository) :
     BaseViewModel(application) {
 
     fun getYouTubeVideo(id: Int): Single<Uri> {

@@ -7,17 +7,17 @@ import com.uoooo.simple.example.ui.common.BaseDataSourceFactory
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.subjects.Subject
 
-class RecommendationMovieDataSourceFactory(
+class RecommendMovieDataSourceFactory(
     private val repository: MovieRepository,
     private val id: Int,
     override val startPage: Int,
     override val endPage: Int,
     override val pagingState: Subject<PagingState>
 ) : BaseDataSourceFactory<Movie>(startPage, endPage, pagingState) {
-    private lateinit var popularMovieDataSource: RecommendationsMovieDataSource
+    private lateinit var popularMovieDataSource: RecommendMovieDataSource
 
     override fun create(): DataSource<Int, Movie> {
-        popularMovieDataSource = RecommendationsMovieDataSource(repository, id, startPage, endPage, pagingState)
+        popularMovieDataSource = RecommendMovieDataSource(repository, id, startPage, endPage, pagingState)
         return popularMovieDataSource
     }
 

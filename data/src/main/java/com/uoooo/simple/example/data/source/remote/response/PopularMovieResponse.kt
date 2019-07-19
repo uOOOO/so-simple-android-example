@@ -5,7 +5,7 @@ import com.squareup.moshi.JsonClass
 import com.uoooo.simple.example.data.entity.Movie
 
 @JsonClass(generateAdapter = true)
-data class MoviePopularResponse(
+data class PopularMovieResponse(
     @Json(name = "page")
     val page: Int,
 

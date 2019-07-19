@@ -2,7 +2,7 @@ package com.uoooo.simple.example.data.entity
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.EnumJsonAdapter
-import com.uoooo.simple.example.data.source.remote.response.MoviePopularResponse
+import com.uoooo.simple.example.data.source.remote.response.PopularMovieResponse
 import com.uoooo.simple.example.data.source.remote.response.VideosResponse
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -63,7 +63,7 @@ class ResponseDeserializeTest {
                 "    }\n" +
                 "  ]\n" +
                 "}"
-        val adapter = moshi.adapter(MoviePopularResponse::class.java).nullSafe()
+        val adapter = moshi.adapter(PopularMovieResponse::class.java).nullSafe()
         val response = adapter.fromJson(json)
         assertEquals(response?.page, 1)
         assertEquals(response?.results?.size, 3)

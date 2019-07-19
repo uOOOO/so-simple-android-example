@@ -10,8 +10,9 @@ import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.Subject
 import io.sellmair.disposer.disposeBy
 
-class PopularDataSource(
+class RecommendMovieDataSource(
     private val repository: MovieRepository,
+    private val id: Int,
     override val startPage: Int,
     override val endPage: Int,
     override val pagingState: Subject<PagingState>
@@ -21,7 +22,7 @@ class PopularDataSource(
         callback: LoadInitialCallback<Int, Movie>
     ) {
         pagingState.onNext(PagingState.InitialLoading)
-        repository.getPopular(startPage)
+        repository.getRecommendations(id, startPage)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
@@ -39,7 +40,7 @@ class PopularDataSource(
             return
         }
         pagingState.onNext(PagingState.Loading)
-        repository.getPopular(params.key)
+        repository.getRecommendations(id, params.key)
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({

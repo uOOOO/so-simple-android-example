@@ -22,8 +22,8 @@ import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import com.uoooo.simple.example.ui.movie.MovieAdapter
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
-import com.uoooo.simple.example.ui.viewmodel.MovieVideoViewModel
-import com.uoooo.simple.example.ui.viewmodel.RecommendationListViewModel
+import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
+import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -35,8 +35,8 @@ import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DetailFragment : Fragment() {
-    private val recommendationListViewModel: RecommendationListViewModel by viewModel()
-    private val movieVideoViewModel: MovieVideoViewModel by viewModel()
+    private val recommendMovieViewModel: RecommendMovieViewModel by viewModel()
+    private val videoViewModel: VideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
         ExoPlayerPlayManager()
     }
@@ -93,7 +93,7 @@ class DetailFragment : Fragment() {
             this.layoutManager = LinearLayoutManager(context)
         }
 
-        recommendationListViewModel.networkState
+        recommendMovieViewModel.networkState
             .subscribe {
                 Log.d(TAG, "PagingState = $it")
                 when (it) {
@@ -115,7 +115,7 @@ class DetailFragment : Fragment() {
             }
             .disposeBy(onDestroy)
 
-        recommendationListViewModel.getRecommendationList(id, 1, 1)
+        recommendMovieViewModel.getRecommendationList(id, 1, 1)
             .subscribe {
                 adapter.submitList(it)
             }
@@ -123,7 +123,7 @@ class DetailFragment : Fragment() {
     }
 
     private fun loadVideoData(id: Int) {
-        movieVideoViewModel.getYouTubeVideo(id)
+        videoViewModel.getYouTubeVideo(id)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uri ->
                 playerPrepare(uri)
