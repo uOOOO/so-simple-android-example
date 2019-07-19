@@ -26,7 +26,7 @@ class PopularMovieDataSource(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 callback.onResult(it, null, startPage + 1)
-                pagingState.onNext(PagingState.Loaded)
+                pagingState.onNext(PagingState.Loaded(it.isEmpty()))
             }, {
                 it.printEnhancedStackTrace()
                 pagingState.onNext(PagingState.Error(it))
@@ -44,7 +44,7 @@ class PopularMovieDataSource(
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 callback.onResult(it, params.key + 1)
-                pagingState.onNext(PagingState.Loaded)
+                pagingState.onNext(PagingState.Loaded(it.isEmpty()))
             }, {
                 it.printEnhancedStackTrace()
                 pagingState.onNext(PagingState.Error(it))

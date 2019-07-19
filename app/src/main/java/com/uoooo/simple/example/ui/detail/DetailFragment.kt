@@ -22,8 +22,8 @@ import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import com.uoooo.simple.example.ui.movie.RecommendMovieAdapter
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
-import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
+import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
@@ -106,7 +106,8 @@ class DetailFragment : Fragment() {
                     }
                     is PagingState.Loaded -> {
                         progressView.visibility = View.GONE
-                        recommendationText.visibility = View.VISIBLE
+                        recommendationText.visibility =
+                            if (adapter.itemCount == 0 && it.isEmptyResult) View.GONE else View.VISIBLE
                     }
                     is PagingState.Error -> {
                         progressView.visibility = View.GONE
