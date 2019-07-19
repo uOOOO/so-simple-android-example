@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
 import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
-import com.uoooo.simple.example.ui.movie.MovieAdapter
+import com.uoooo.simple.example.ui.movie.PopularMovieAdapter
 import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.state.PagingState
 import io.reactivex.subjects.PublishSubject
@@ -41,12 +41,12 @@ class MainActivity : AppCompatActivity() {
             }.disposeBy(onDestroy)
         }
 
-        val adapter = MovieAdapter(itemClickObserver)
+        val adapter = PopularMovieAdapter(itemClickObserver)
 
         movieList.apply {
             setHasFixedSize(true)
             this.adapter = adapter
-            this.layoutManager = LinearLayoutManager(context)
+            this.layoutManager = GridLayoutManager(context, 3)
         }
 
         movieListSwipeRefresh.refreshes()
@@ -75,7 +75,7 @@ class MainActivity : AppCompatActivity() {
             }
             .disposeBy(onDestroy)
 
-        popularMovieViewModel.getPopularList(1, 5)
+        popularMovieViewModel.getPopularList(1, 6)
             .subscribe {
                 adapter.submitList(it)
                 movieListSwipeRefresh.isRefreshing = false

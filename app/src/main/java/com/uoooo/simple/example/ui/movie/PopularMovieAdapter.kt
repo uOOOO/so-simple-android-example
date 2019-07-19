@@ -14,10 +14,10 @@ import com.uoooo.simple.example.data.ServerConfig
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import io.reactivex.Observer
-import kotlinx.android.synthetic.main.recyclerview_item_movie.view.*
+import kotlinx.android.synthetic.main.recyclerview_item_popular_movie.view.*
 
-class MovieAdapter(private val itemClickObserver: Observer<Movie>?) :
-    PagedListAdapter<Movie, MovieAdapter.PopularMovieViewHolder>(DIFF_CALLBACK) {
+class PopularMovieAdapter(private val itemClickObserver: Observer<Movie>?) :
+    PagedListAdapter<Movie, PopularMovieAdapter.PopularMovieViewHolder>(DIFF_CALLBACK) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularMovieViewHolder {
         return PopularMovieViewHolder(parent)
@@ -31,18 +31,16 @@ class MovieAdapter(private val itemClickObserver: Observer<Movie>?) :
 
     class PopularMovieViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context).inflate(
-            R.layout.recyclerview_item_movie,
+            R.layout.recyclerview_item_popular_movie,
             parent,
             false
         )
     ) {
         private val itemRootLayout = itemView.itemRootLayout
         private val posterImage = itemView.posterImage
-        private val voteAverageProgress = itemView.voteAverageProgress
-        private val voteAverageText = itemView.voteAverageText
         private val titleText = itemView.titleText
+        private val voteAverageText = itemView.voteAverageText
         private val releaseDateText = itemView.releaseDateText
-        private val overviewText = itemView.overviewText
 
         fun bind(movie: Movie, itemClickObserver: Observer<Movie>?) {
             movie.run {
@@ -54,12 +52,7 @@ class MovieAdapter(private val itemClickObserver: Observer<Movie>?) :
 
                 titleText.text = title
                 releaseDateText.text = releaseDate
-                overviewText.text = overview
-
-                (voteAverage * 10).toInt().run {
-                    voteAverageProgress.progress = this
-                    voteAverageText.text = String.format("%d%%", this)
-                }
+                voteAverageText.text = String.format("%.1f", voteAverage)
 
                 itemClickObserver?.apply {
                     itemRootLayout.clicks()

@@ -19,7 +19,7 @@ import com.uoooo.simple.example.data.ServerConfig
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
-import com.uoooo.simple.example.ui.movie.MovieAdapter
+import com.uoooo.simple.example.ui.movie.RecommendMovieAdapter
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
@@ -85,7 +85,7 @@ class DetailFragment : Fragment() {
             }.disposeBy(onDestroy)
         }
 
-        val adapter = MovieAdapter(itemClickObserver)
+        val adapter = RecommendMovieAdapter(itemClickObserver)
 
         recommendationList.apply {
             setHasFixedSize(true)
