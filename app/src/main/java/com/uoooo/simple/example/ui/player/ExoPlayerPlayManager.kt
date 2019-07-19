@@ -14,13 +14,18 @@ import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ads.AdsLoader
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.PlayerView
+import com.uoooo.simple.example.ui.player.rx.ExoPlayerEvent
+import com.uoooo.simple.example.ui.player.rx.ExoPlayerVideo
+import com.uoooo.simple.example.ui.player.rx.events
+import com.uoooo.simple.example.ui.player.rx.videos
+import io.reactivex.Observable
 import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.CookiePolicy
 import kotlin.math.max
 
 class ExoPlayerPlayManager {
-    var player: SimpleExoPlayer? = null
+    private var player: SimpleExoPlayer? = null
         private set
     private var mediaSource: MediaSource? = null
     private var mediaDrm: FrameworkMediaDrm? = null
@@ -96,6 +101,14 @@ class ExoPlayerPlayManager {
 
     fun addAnalyticsListener(listener: AnalyticsListener) {
         player?.addAnalyticsListener(listener)
+    }
+
+    fun getEventListener(): Observable<ExoPlayerEvent>? {
+        return player?.events()
+    }
+
+    fun getVideoListener(): Observable<ExoPlayerVideo>? {
+        return player?.videos()
     }
 
     private fun updateTrackSelectorParameters() {

@@ -166,10 +166,9 @@ class DetailFragment : Fragment() {
 
     private fun bindPlayerListeners() {
         playManager.addAnalyticsListener(EventLogger(playManager.trackSelector))
-        playManager.player?.apply {
-            listenerDisposer += events().subscribe { onExoPlayerEventListener(it) }
-            listenerDisposer += videos().subscribe { onExoPlayerVideoListener(it) }
-        }
+        // TODO : handle player nullable more properly
+        listenerDisposer += playManager.getEventListener()?.subscribe { onExoPlayerEventListener(it) } ?: return
+        listenerDisposer += playManager.getVideoListener()?.subscribe { onExoPlayerVideoListener(it) } ?: return
     }
 
     private fun showBackdropImage() {
