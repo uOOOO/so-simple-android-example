@@ -6,6 +6,7 @@ import android.util.Log
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.analytics.AnalyticsListener
+import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.drm.DefaultDrmSessionManager
 import com.google.android.exoplayer2.drm.FrameworkMediaCrypto
 import com.google.android.exoplayer2.drm.FrameworkMediaDrm
@@ -91,6 +92,7 @@ class ExoPlayerPlayManager {
         }
 
         this.player?.run {
+            setAudioFocus()
             val haveStartPosition = startWindow != C.INDEX_UNSET
             if (haveStartPosition) {
                 seekTo(startWindow, startPosition)
@@ -194,6 +196,14 @@ class ExoPlayerPlayManager {
 
     fun hasPlayer(): Boolean {
         return player != null && playerView != null
+    }
+
+    private fun setAudioFocus() {
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(C.CONTENT_TYPE_MOVIE)
+            .build()
+        player?.setAudioAttributes(audioAttributes, true)
     }
 
     companion object {
