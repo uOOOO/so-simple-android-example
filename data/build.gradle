@@ -38,8 +38,8 @@ dependencies {
     implementation "com.squareup.moshi:moshi-adapters:$vers.moshi"
     kapt "com.squareup.moshi:moshi-kotlin-codegen:$vers.moshi"
 
-    debugImplementation "com.readystatesoftware.chuck:library:$vers.chuck"
-    releaseImplementation "com.readystatesoftware.chuck:library-no-op:$vers.chuck"
+    debugImplementation "com.github.ChuckerTeam.Chucker:library:$vers.chucker"
+    releaseImplementation "com.github.ChuckerTeam.Chucker:library-no-op:$vers.chucker"
 
     testImplementation "junit:junit:$vers.junit"
     testImplementation "io.mockk:mockk:$vers.mockk"

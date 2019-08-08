@@ -1,6 +1,6 @@
 package com.uoooo.simple.example.data.di
 
-import com.readystatesoftware.chuck.ChuckInterceptor
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.adapters.EnumJsonAdapter
 import com.uoooo.simple.example.data.BuildConfig
@@ -25,7 +25,7 @@ val webServiceModule = module {
     single {
         OkHttpClient.Builder()
             .addInterceptor(ApiKeyInterceptor())
-            .addInterceptor(ChuckInterceptor(get()))
+            .addInterceptor(ChuckerInterceptor(get()))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level =
                     if (BuildConfig.DEBUG)
