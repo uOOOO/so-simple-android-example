@@ -10,7 +10,8 @@ import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
 import com.uoooo.simple.example.ui.movie.PopularMovieAdapter
 import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
-import com.uoooo.simple.example.ui.viewmodel.state.PagingState
+import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
@@ -26,6 +27,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         initMovieList()
+        popularMovieViewModel.loadPopularMovie(1, 6)
 
 //        supportFragmentManager.beginTransaction()
 //            .add(R.id.fragmentContainer, DetailFragment(), DetailFragment::class.getFullName())
@@ -51,31 +53,32 @@ class MainActivity : AppCompatActivity() {
 
         movieListSwipeRefresh.refreshes()
             .subscribe {
-                popularMovieViewModel.invalidate(adapter)
+                popularMovieViewModel.invalidate()
             }
             .disposeBy(onDestroy)
 
-        popularMovieViewModel.networkState
+        popularMovieViewModel.getLoadingState()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                Log.d(TAG, "PagingState = $it")
+                Log.d(TAG, "LoadingState = $it")
                 when (it) {
-                    is PagingState.InitialLoading -> {
+                    is LoadingState.InitialLoading -> {
                         progressView.visibility = View.VISIBLE
                     }
-                    is PagingState.Loading -> {
+                    is LoadingState.Loading -> {
 
                     }
-                    is PagingState.Loaded -> {
+                    is LoadingState.Loaded -> {
                         progressView.visibility = View.GONE
                     }
-                    is PagingState.Error -> {
+                    is LoadingState.Error -> {
                         progressView.visibility = View.GONE
                     }
                 }
             }
             .disposeBy(onDestroy)
 
-        popularMovieViewModel.getPopularList(1, 6)
+        popularMovieViewModel.getPagedList()
             .subscribe {
                 adapter.submitList(it)
                 movieListSwipeRefresh.isRefreshing = false

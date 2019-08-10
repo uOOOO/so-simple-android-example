@@ -1,36 +1,27 @@
 package com.uoooo.simple.example.ui.viewmodel
 
 import android.app.Application
-import androidx.paging.PagedList
-import androidx.paging.RxPagedListBuilder
+import com.jakewharton.rxrelay2.BehaviorRelay
 import com.uoooo.simple.example.domain.model.Movie
-import com.uoooo.simple.example.domain.repository.MovieRepository
 import com.uoooo.simple.example.ui.common.BasePagingViewModel
-import com.uoooo.simple.example.ui.movie.source.PopularMovieDataSourceFactory
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
-import io.reactivex.subjects.Subject
+import com.uoooo.simple.example.ui.movie.repository.MoviePagedListRepository
 
-class PopularMovieViewModel(application: Application, private val repository: MovieRepository) :
+class PopularMovieViewModel(application: Application, private val repository: MoviePagedListRepository) :
     BasePagingViewModel<Movie>(application) {
-    private lateinit var pagedList: Subject<PagedList<Movie>>
-
-    fun getPopularList(startPage: Int, endPage: Int): Observable<PagedList<Movie>> {
-        if (!::pagedList.isInitialized) {
-            pagedList = createPagedPopularList(startPage, endPage)
-                .subscribeWith(BehaviorSubject.create())
+    private val request: BehaviorRelay<PopularListRequest> by lazy {
+        BehaviorRelay.create<PopularListRequest>().apply {
+            distinctUntilChanged()
+                .map { repository.getPopular(it.startPage, it.endPage) }
+                .subscribe(result)
         }
-        return pagedList
+    }
+    
+    fun loadPopularMovie(startPage: Int, endPage: Int) {
+        request.accept(PopularListRequest(startPage, endPage))
     }
 
-    private fun createPagedPopularList(startPage: Int, endPage: Int): Observable<PagedList<Movie>> {
-        val factory = PopularMovieDataSourceFactory(repository, startPage, endPage, _networkState)
-            .apply { factoryList += this }
-        val config = PagedList.Config.Builder()
-            .setPageSize(10)
-            .setEnablePlaceholders(false)
-            .build()
-        return RxPagedListBuilder(factory, config)
-            .buildObservable()
-    }
+    private data class PopularListRequest(
+        val startPage: Int,
+        val endPage: Int
+    )
 }

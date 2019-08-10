@@ -5,7 +5,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     implementation "org.koin:koin-core:$vers.koin"
-    implementation "io.reactivex.rxjava2:rxjava:$vers.rxjava.java"
+    implementation "io.reactivex.rxjava2:rxjava:$vers.rx.java"
 
     testImplementation "junit:junit:$vers.junit"
     testImplementation "io.mockk:mockk:$vers.mockk"

@@ -24,7 +24,7 @@ import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
-import com.uoooo.simple.example.ui.viewmodel.state.PagingState
+import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.Disposer
@@ -33,6 +33,7 @@ import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
 import kotlinx.android.synthetic.main.fragment_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.ext.getFullName
 
 class DetailFragment : Fragment() {
     private val recommendMovieViewModel: RecommendMovieViewModel by viewModel()
@@ -49,12 +50,12 @@ class DetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val movie: Movie = (arguments?.getSerializable(BUNDLE_OBJECT) ?: return) as Movie
-
-        initVideo(movie.backdropPath)
-        initRecommendationList(movie.id)
-
-        loadVideoData(movie.id)
+        (arguments?.getSerializable(BUNDLE_OBJECT) as Movie?)?.let { movie ->
+            initVideo(movie.backdropPath)
+            initRecommendationList()
+            loadVideo(movie.id)
+            loadRecommendation(movie.id)
+        }
     }
 
     private fun initVideo(backdropPath: String?) {
@@ -70,17 +71,15 @@ class DetailFragment : Fragment() {
         playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
     }
 
-    private fun initRecommendationList(id: Int) {
+    private fun initRecommendationList() {
         val itemClickObserver = PublishSubject.create<Movie>().apply {
-            subscribe {
-                onDestroy.dispose()
-                playerRelease()
-
-                arguments = Bundle().apply {
-                    putSerializable(BUNDLE_OBJECT, it)
-                }
-                fragmentManager?.run {
-                    this.beginTransaction().detach(this@DetailFragment).attach(this@DetailFragment).commit()
+            subscribe { movie ->
+                (view?.parent as ViewGroup?)?.id?.let { containerId ->
+                    fragmentManager?.run {
+                        this.beginTransaction()
+                            .replace(containerId, newInstance(movie), DetailFragment::class.getFullName())
+                            .commit()
+                    }
                 }
             }.disposeBy(onDestroy)
         }
@@ -93,37 +92,38 @@ class DetailFragment : Fragment() {
             this.layoutManager = LinearLayoutManager(context)
         }
 
-        recommendMovieViewModel.networkState
+        recommendMovieViewModel.getLoadingState()
+            .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
-                Log.d(TAG, "PagingState = $it")
+                Log.d(TAG, "LoadingState = $it")
                 when (it) {
-                    is PagingState.InitialLoading -> {
+                    is LoadingState.InitialLoading -> {
                         progressView.visibility = View.VISIBLE
                         recommendationText.visibility = View.GONE
                     }
-                    is PagingState.Loading -> {
+                    is LoadingState.Loading -> {
 
                     }
-                    is PagingState.Loaded -> {
+                    is LoadingState.Loaded -> {
                         progressView.visibility = View.GONE
                         recommendationText.visibility =
                             if (adapter.itemCount == 0 && it.isEmptyResult) View.GONE else View.VISIBLE
                     }
-                    is PagingState.Error -> {
+                    is LoadingState.Error -> {
                         progressView.visibility = View.GONE
                     }
                 }
             }
             .disposeBy(onDestroy)
 
-        recommendMovieViewModel.getRecommendationList(id, 1, 1)
+        recommendMovieViewModel.getPagedList()
             .subscribe {
                 adapter.submitList(it)
             }
             .disposeBy(onDestroy)
     }
 
-    private fun loadVideoData(id: Int) {
+    private fun loadVideo(id: Int) {
         videoViewModel.getYouTubeVideo(id)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uri ->
@@ -134,6 +134,10 @@ class DetailFragment : Fragment() {
                 playerError()
             })
             .disposeBy(onDestroy)
+    }
+
+    private fun loadRecommendation(id: Int) {
+        recommendMovieViewModel.loadRecommendationList(id, 1, 1)
     }
 
     private fun playerPrepare(uri: Uri) {

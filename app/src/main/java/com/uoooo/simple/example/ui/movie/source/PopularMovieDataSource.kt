@@ -1,55 +1,68 @@
 package com.uoooo.simple.example.ui.movie.source
 
+import android.annotation.SuppressLint
+import com.uoooo.simple.example.data.mapper.mapToModel
+import com.uoooo.simple.example.data.source.remote.MovieDataSourceRemote
 import com.uoooo.simple.example.domain.model.Movie
-import com.uoooo.simple.example.domain.repository.MovieRepository
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.BasePageKeyedDataSource
-import com.uoooo.simple.example.ui.viewmodel.state.PagingState
+import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.Subject
-import io.sellmair.disposer.disposeBy
 
 class PopularMovieDataSource(
-    private val repository: MovieRepository,
+    private val sourceRemote: MovieDataSourceRemote,
     override val startPage: Int,
-    override val endPage: Int,
-    override val pagingState: Subject<PagingState>
-) : BasePageKeyedDataSource<Movie>(startPage, endPage, pagingState) {
+    override val endPage: Int
+) : BasePageKeyedDataSource<Int, Movie>(startPage, endPage) {
+    @SuppressLint("CheckResult")
     override fun loadInitial(
         params: LoadInitialParams<Int>,
         callback: LoadInitialCallback<Int, Movie>
     ) {
-        pagingState.onNext(PagingState.InitialLoading)
-        repository.getPopular(startPage)
+        sourceRemote.getPopularMovie(startPage)
+            .doOnSubscribe { loadingState.accept(LoadingState.InitialLoading) }
+            .map { it ->
+                it.asSequence()
+                    .map { it.mapToModel() }
+                    .filter { it != null }
+                    .map { it!! }
+                    .toList()
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 callback.onResult(it, null, startPage + 1)
-                pagingState.onNext(PagingState.Loaded(it.isEmpty()))
+                loadingState.accept(LoadingState.Loaded(it.isEmpty()))
             }, {
                 it.printEnhancedStackTrace()
-                pagingState.onNext(PagingState.Error(it))
+                loadingState.accept(LoadingState.Error(it, LoadingState.InitialLoading))
             })
-            .disposeBy(disposer)
     }
 
+    @SuppressLint("CheckResult")
     override fun loadAfter(params: LoadParams<Int>, callback: LoadCallback<Int, Movie>) {
         if (endPage < params.key) {
             return
         }
-        pagingState.onNext(PagingState.Loading)
-        repository.getPopular(params.key)
+        sourceRemote.getPopularMovie(params.key)
+            .doOnSubscribe { loadingState.accept(LoadingState.Loading) }
+            .map { it ->
+                it.asSequence()
+                    .map { it.mapToModel() }
+                    .filter { it != null }
+                    .map { it!! }
+                    .toList()
+            }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
                 callback.onResult(it, params.key + 1)
-                pagingState.onNext(PagingState.Loaded(it.isEmpty()))
+                loadingState.accept(LoadingState.Loaded(it.isEmpty()))
             }, {
                 it.printEnhancedStackTrace()
-                pagingState.onNext(PagingState.Error(it))
+                loadingState.accept(LoadingState.Error(it, LoadingState.Loading))
             })
-            .disposeBy(disposer)
     }
 
     override fun loadBefore(params: LoadParams<Int>, callback: LoadCallback<Int, Movie>) {
