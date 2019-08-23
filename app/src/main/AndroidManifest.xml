@@ -2,8 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.uoooo.simple.example">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-
     <application
         android:name="com.uoooo.simple.example.ExampleApplication"
         android:allowBackup="true"
@@ -14,7 +12,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name="com.uoooo.simple.example.MainActivity"
-            android:configChanges="orientation|screenSize">
+            android:configChanges="orientation|screenSize|screenLayout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -22,5 +20,7 @@
             </intent-filter>
         </activity>
     </application>
+
+    <uses-permission android:name="android.permission.INTERNET" />
 
 </manifest>
