@@ -7,6 +7,7 @@ import android.util.Pair
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
@@ -20,22 +21,58 @@ import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import com.uoooo.simple.example.ui.movie.RecommendMovieAdapter
+import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
-import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.Disposer
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
-import kotlinx.android.synthetic.main.fragment_detail.*
+import kotlinx.android.synthetic.main.layout_detail.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.ext.getFullName
 
-class DetailFragment : Fragment() {
+class DetailFragment : Fragment(), MotionLayout.TransitionListener {
+    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+
+    }
+
+    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+        if (p1 == p0?.endState &&
+            p2 == p0.startState) {
+            playerView.hideController()
+        }
+    }
+
+    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+        var value = p3
+        if (value > 1) {
+            value = 1f
+        } else if (value < 0) {
+            value = 0f
+        }
+        value = 1 - value
+        recommendationList.alpha = value
+        recommendationText.alpha = value
+
+        if (p1 == p0?.startState &&
+            p2 == p0.endState &&
+            p3 > 0.05f
+        ) {
+            playerView.hideController()
+        }
+    }
+
+    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+        if (p1 == p0?.startState) {
+            playerView.showController()
+        }
+    }
+
     private val recommendMovieViewModel: RecommendMovieViewModel by viewModel()
     private val videoViewModel: VideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
@@ -43,19 +80,27 @@ class DetailFragment : Fragment() {
     }
     private val listenerDisposer = Disposer.create(onDestroy)
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_detail, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         (arguments?.getSerializable(BUNDLE_OBJECT) as Movie?)?.let { movie ->
-            initVideo(movie.backdropPath)
-            initRecommendationList()
+            initView(movie)
             loadVideo(movie.id)
             loadRecommendation(movie.id)
         }
+    }
+
+    private fun initView(movie: Movie) {
+        motionRootView.setTransitionListener(this)
+        initVideo(movie.backdropPath)
+        initRecommendationList()
     }
 
     private fun initVideo(backdropPath: String?) {
@@ -65,8 +110,8 @@ class DetailFragment : Fragment() {
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(playerView.exo_backdrop)
 
-        playerView.useController = false
-        playerView.controllerShowTimeoutMs = 1500
+        playerView.useController = true
+        playerView.controllerShowTimeoutMs = 1500 * 3
         // TODO : error message
         playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
     }
@@ -77,7 +122,11 @@ class DetailFragment : Fragment() {
                 (view?.parent as ViewGroup?)?.id?.let { containerId ->
                     fragmentManager?.run {
                         this.beginTransaction()
-                            .replace(containerId, newInstance(movie), DetailFragment::class.getFullName())
+                            .replace(
+                                containerId,
+                                newInstance(movie),
+                                DetailFragment::class.getFullName()
+                            )
                             .commit()
                     }
                 }
@@ -171,8 +220,10 @@ class DetailFragment : Fragment() {
     private fun bindPlayerListeners() {
         playManager.addAnalyticsListener(EventLogger(playManager.trackSelector))
         // TODO : handle player nullable more properly
-        listenerDisposer += playManager.getEventListener()?.subscribe { onExoPlayerEventListener(it) } ?: return
-        listenerDisposer += playManager.getVideoListener()?.subscribe { onExoPlayerVideoListener(it) } ?: return
+        listenerDisposer += playManager.getEventListener()?.subscribe { onExoPlayerEventListener(it) }
+            ?: return
+        listenerDisposer += playManager.getVideoListener()?.subscribe { onExoPlayerVideoListener(it) }
+            ?: return
     }
 
     private fun showBackdropImage() {

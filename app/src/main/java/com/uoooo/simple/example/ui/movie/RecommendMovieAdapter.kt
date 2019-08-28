@@ -46,7 +46,6 @@ class RecommendMovieAdapter(private val itemClickObserver: Observer<Movie>?) :
         private val overviewText = itemView.overviewText
 
         fun bind(movie: Movie, itemClickObserver: Observer<Movie>?) {
-            Log.d("#####", "bind")
             movie.run {
                 GlideApp.with(posterImage)
                     .load(getPosterImageUrl(posterPath, ServerConfig.ImageSize.NORMAL))

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/motionRootView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutDescription="@xml/scene_detail"
+    tools:showPaths="true">
+
+    <View
+        android:id="@+id/dimBackgroundView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/black" />
+
+    <View
+        android:id="@+id/motionInteractView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#202020"
+        app:layout_constraintDimensionRatio="16:9"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.uoooo.simple.example.ui.common.widget.CustomPlayerView
+        android:id="@+id/playerView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:controller_layout_id="@layout/exo_player_control_view"
+        app:layout_constraintBottom_toBottomOf="@id/motionInteractView"
+        app:layout_constraintEnd_toEndOf="@id/motionInteractView"
+        app:layout_constraintStart_toStartOf="@id/motionInteractView"
+        app:layout_constraintTop_toTopOf="@id/motionInteractView"
+        app:resize_mode="fixed_width"
+        app:show_buffering="when_playing" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/infoView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#202020"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/playerView">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/recommendationText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="6dp"
+                android:gravity="start"
+                android:text="@string/recommendations"
+                android:textColor="@android:color/white"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                tools:visibility="visible" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recommendationList"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/progressView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/playerView"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/the_nyan_cat"
+        tools:visibility="visible" />
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

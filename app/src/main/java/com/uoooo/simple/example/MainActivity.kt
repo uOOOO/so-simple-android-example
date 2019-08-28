@@ -9,8 +9,8 @@ import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
 import com.uoooo.simple.example.ui.movie.PopularMovieAdapter
-import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
+import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
         val itemClickObserver = PublishSubject.create<Movie>().apply {
             subscribe {
                 supportFragmentManager.beginTransaction()
-                    .add(R.id.fragmentContainer, DetailFragment.newInstance(it), DetailFragment::class.getFullName())
+                    .replace(R.id.fragmentContainer, DetailFragment.newInstance(it), DetailFragment::class.getFullName())
                     .commitAllowingStateLoss()
             }.disposeBy(onDestroy)
         }
