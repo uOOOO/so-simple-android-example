@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.util.Pair
 import android.view.LayoutInflater
+import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
@@ -43,7 +44,8 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
 
     override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
         if (p1 == p0?.endState &&
-            p2 == p0.startState) {
+            p2 == p0.startState
+        ) {
             playerView.hideController()
         }
     }
@@ -278,11 +280,19 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         Log.d(TAG, "onExoPlayerVideoListener() event = $event")
         when (event) {
             is ExoPlayerVideoRenderedFirstFrame -> onRenderedFirstFrame()
+            is ExoPlayerVideoSurfaceSizeChanged -> onSurfaceSizeChanged(event)
         }
     }
 
     private fun onRenderedFirstFrame() {
 
+    }
+
+    private fun onSurfaceSizeChanged(event: ExoPlayerVideoSurfaceSizeChanged) {
+        val surfaceView = playerView.videoSurfaceView
+        if (surfaceView is SurfaceView) {
+            surfaceView.holder.setFixedSize(event.width, event.height)
+        }
     }
 
     companion object {
