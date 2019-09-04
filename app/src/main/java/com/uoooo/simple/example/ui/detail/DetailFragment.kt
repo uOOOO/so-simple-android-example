@@ -38,43 +38,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.ext.getFullName
 
 class DetailFragment : Fragment(), MotionLayout.TransitionListener {
-    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
-
-    }
-
-    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
-        if (p1 == p0?.endState &&
-            p2 == p0.startState
-        ) {
-            playerView.hideController()
-        }
-    }
-
-    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
-        var value = p3
-        if (value > 1) {
-            value = 1f
-        } else if (value < 0) {
-            value = 0f
-        }
-        value = 1 - value
-        recommendationList.alpha = value
-        recommendationText.alpha = value
-
-        if (p1 == p0?.startState &&
-            p2 == p0.endState &&
-            p3 > 0.05f
-        ) {
-            playerView.hideController()
-        }
-    }
-
-    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
-        if (p1 == p0?.startState) {
-            playerView.showController()
-        }
-    }
-
     private val recommendMovieViewModel: RecommendMovieViewModel by viewModel()
     private val videoViewModel: VideoViewModel by viewModel()
     private val playManager: ExoPlayerPlayManager by lazy {
@@ -266,7 +229,6 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
                     return
                 }
                 hideBackdropImage()
-                playerView.useController = true
                 playerView.controllerHideOnTouch = true
             }
             Player.STATE_ENDED -> {
@@ -292,6 +254,49 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         val surfaceView = playerView.videoSurfaceView
         if (surfaceView is SurfaceView) {
             surfaceView.holder.setFixedSize(event.width, event.height)
+        }
+    }
+
+    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float) {
+
+    }
+
+    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int) {
+        if (p1 == p0?.endState &&
+            p2 == p0.startState
+        ) {
+            Log.d(TAG, "onTransitionStarted")
+            playerView.useController = false
+            playerView.hideController()
+        }
+    }
+
+    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float) {
+        var value = p3
+        if (value > 1) {
+            value = 1f
+        } else if (value < 0) {
+            value = 0f
+        }
+        value = 1 - value
+        recommendationList.alpha = value
+        recommendationText.alpha = value
+
+        if (p1 == p0?.startState &&
+            p2 == p0.endState &&
+            p3 > 0.05f
+        ) {
+            Log.d(TAG, "onTransitionChange")
+            playerView.useController = false
+            playerView.hideController()
+        }
+    }
+
+    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
+        if (p1 == p0?.startState) {
+            Log.d(TAG, "onTransitionCompleted")
+            playerView.useController = true
+            playerView.showController()
         }
     }
 
