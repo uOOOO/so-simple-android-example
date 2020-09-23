@@ -85,7 +85,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         val itemClickObserver = PublishSubject.create<Movie>().apply {
             subscribe { movie ->
                 (view?.parent as ViewGroup?)?.id?.let { containerId ->
-                    fragmentManager?.run {
+                    parentFragmentManager.run {
                         this.beginTransaction()
                             .replace(
                                 containerId,
