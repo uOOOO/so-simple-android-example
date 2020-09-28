@@ -1,2 +1,0 @@
-include ':app', ':domain', ':data'
-rootProject.name='So Simple Android Example'
