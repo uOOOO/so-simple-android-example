@@ -1,16 +1,18 @@
 import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
-    id("com.android.library")
     kotlin("multiplatform")
-    id("kotlin-android-extensions")
 }
 
 group = "com.example"
 version = "1.0-SNAPSHOT"
 
 kotlin {
-    android()
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+    }
     iosX64("ios") {
         binaries {
             framework {
@@ -26,29 +28,14 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val androidMain by getting {
+        val jvmMain by getting
+        val jvmTest by getting {
             dependencies {
-                implementation("androidx.core:core-ktx:1.3.1")
+                implementation(kotlin("test-junit"))
             }
         }
-        val androidTest by getting
         val iosMain by getting
         val iosTest by getting
-    }
-}
-
-android {
-    compileSdkVersion(Version.Android.compileSdkVersion)
-    defaultConfig {
-        minSdkVersion(Version.Android.minSdkVersion)
-        targetSdkVersion(Version.Android.targetSdkVersion)
-        versionCode = 1
-        versionName = "1.0"
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
     }
 }
 

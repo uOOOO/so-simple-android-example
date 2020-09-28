@@ -75,7 +75,8 @@ dependencies {
 
     implementation("com.github.HaarigerHarald:android-youtubeExtractor:master-SNAPSHOT")
 
-    implementation(project(":shared"))
+    implementation(project(":shared:data"))
+    implementation(project(":shared:domain"))
     implementation(project(":data"))
     implementation(project(":domain"))
 }
