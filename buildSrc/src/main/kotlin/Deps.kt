@@ -23,8 +23,14 @@ object Version {
     const val testRunner = "1.3.0"
     const val espressoCore = "3.3.0"
 
-//    const val ktor = "1.3.2"
-//    const val koin = "3.0.0-alpha-2"
+    const val serialization = "1.0.0-RC"
+    const val coroutines = "1.3.9-native-mt-2"
+    const val koinMpp = "3.0.0-alpha-4"
+    const val stately = "1.1.0"
+    const val ktor = "1.4.1"
+    const val okhttp = "4.8.1"
+    const val chucker = "3.2.0"
+
 //    const val kotlinSerialization = "0.20.0"
 //    const val sqlDelight = "1.3.0"
 //    const val reaktive = "1.1.12"

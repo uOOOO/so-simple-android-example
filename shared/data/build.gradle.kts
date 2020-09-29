@@ -3,6 +3,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     id("com.android.library")
     kotlin("multiplatform")
+    kotlin("plugin.serialization")
     id("kotlin-android-extensions")
 }
 
@@ -19,7 +20,15 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:${Version.serialization}")
+                implementation("io.ktor:ktor-client-core:${Version.ktor}")
+                implementation("io.ktor:ktor-client-logging:${Version.ktor}")
+                implementation("io.ktor:ktor-client-serialization:${Version.ktor}")
+                implementation(project(":shared:domain"))
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -29,12 +38,24 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation("androidx.core:core-ktx:1.3.1")
+                implementation("io.ktor:ktor-client-okhttp:${Version.ktor}")
+                implementation("com.squareup.okhttp3:logging-interceptor:${Version.okhttp}")
             }
         }
         val androidTest by getting
-        val iosMain by getting
+        val iosMain by getting {
+            dependencies {
+                implementation("io.ktor:ktor-client-ios:${Version.ktor}")
+            }
+        }
         val iosTest by getting
     }
+}
+
+dependencies {
+    // chucker
+    debugImplementation("com.github.chuckerteam.chucker:library:${Version.chucker}")
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:${Version.chucker}")
 }
 
 android {

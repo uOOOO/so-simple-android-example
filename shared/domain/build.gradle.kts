@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     kotlin("multiplatform")
+    id("koin")
 }
 
 group = "com.example"
@@ -21,11 +22,22 @@ kotlin {
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                api("org.jetbrains.kotlinx:kotlinx-coroutines-core") {
+                    version {
+                        strictly(Version.coroutines)
+                    }
+                }
+                api("org.koin:koin-core:${Version.koinMpp}")
+                implementation("co.touchlab:stately-common:1.1.0")
+            }
+        }
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test-common"))
                 implementation(kotlin("test-annotations-common"))
+                implementation("org.koin:koin-test:${Version.koinMpp}")
             }
         }
         val jvmMain by getting

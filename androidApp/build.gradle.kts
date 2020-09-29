@@ -32,6 +32,11 @@ android {
     sourceSets {
         getByName("main").res.srcDir("src/main/res-override")
     }
+    packagingOptions {
+        exclude("META-INF/domain.kotlin_module")
+        exclude("META-INF/data_debug.kotlin_module")
+        exclude("META-INF/data_release.kotlin_module")
+    }
 }
 
 dependencies {
