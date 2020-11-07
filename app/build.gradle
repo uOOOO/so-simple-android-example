@@ -2,6 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion vers.compileSdk
@@ -26,6 +27,9 @@ android {
         targetCompatibility = JavaVersion.VERSION_1_8
         sourceCompatibility = JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = JavaVersion.VERSION_1_8
+    }
     sourceSets {
         main.res.srcDirs += 'src/main/res-override'
     }
@@ -37,14 +41,16 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$vers.kotlin"
     implementation "androidx.appcompat:appcompat:$vers.android.appcompat"
     implementation "androidx.core:core-ktx:$vers.android.coreKtx"
+    implementation "androidx.fragment:fragment-ktx:$vers.android.fragment"
     implementation "androidx.cardview:cardview:$vers.android.cardview"
     implementation "androidx.constraintlayout:constraintlayout:$vers.android.constraintlayout"
     implementation "androidx.paging:paging-runtime:$vers.android.paging"
     implementation "androidx.paging:paging-rxjava2:$vers.android.paging"
     implementation "com.google.android.material:material:$vers.android.material"
-    implementation "org.koin:koin-android:$vers.koin"
-    implementation "org.koin:koin-androidx-scope:$vers.koin"
-    implementation "org.koin:koin-androidx-viewmodel:$vers.koin"
+    implementation "com.google.dagger:hilt-android:$vers.hilt"
+    kapt "com.google.dagger:hilt-android-compiler:$vers.hilt"
+    implementation "androidx.hilt:hilt-lifecycle-viewmodel:$vers.android.hilt"
+    kapt "androidx.hilt:hilt-compiler:$vers.android.hilt"
     implementation "io.reactivex.rxjava2:rxjava:$vers.rx.java"
     implementation "io.reactivex.rxjava2:rxandroid:$vers.rx.android"
     implementation "com.jakewharton.rxrelay2:rxrelay:$vers.rx.relay"

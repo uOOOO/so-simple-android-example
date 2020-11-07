@@ -1,15 +1,39 @@
-apply plugin: 'kotlin'
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
+
+android {
+    compileSdkVersion vers.compileSdk
+
+    defaultConfig {
+        minSdkVersion vers.minSdk
+        targetSdkVersion vers.compileSdk
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
-    implementation "org.koin:koin-core:$vers.koin"
+    implementation "com.google.dagger:hilt-android:$vers.hilt"
+    kapt "com.google.dagger:hilt-android-compiler:$vers.hilt"
     implementation "io.reactivex.rxjava2:rxjava:$vers.rx.java"
 
     testImplementation "junit:junit:$vers.junit"
     testImplementation "io.mockk:mockk:$vers.mockk"
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8

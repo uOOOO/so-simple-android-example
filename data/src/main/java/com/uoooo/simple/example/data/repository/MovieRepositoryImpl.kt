@@ -1,17 +1,18 @@
 package com.uoooo.simple.example.data.repository
 
 import com.uoooo.simple.example.data.mapper.mapToModel
-import com.uoooo.simple.example.data.source.MovieDataSource
+import com.uoooo.simple.example.data.source.remote.MovieDataSourceRemote
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
 import io.reactivex.Single
+import javax.inject.Inject
 
-class MovieRepositoryImpl constructor(
-    private val dataSource: MovieDataSource
+class MovieRepositoryImpl @Inject constructor(
+    private val dataSourceRemote: MovieDataSourceRemote
 ) : MovieRepository {
     override fun getPopular(page: Int): Single<List<Movie>> {
-        return dataSource.getPopularMovie(page)
+        return dataSourceRemote.getPopularMovie(page)
             .map { it ->
                 it.asSequence()
                     .map { it.mapToModel() }
@@ -22,7 +23,7 @@ class MovieRepositoryImpl constructor(
     }
 
     override fun getVideos(id: Int): Single<List<Video>> {
-        return dataSource.getVideos(id)
+        return dataSourceRemote.getVideos(id)
             .map { it ->
                 it.asSequence()
                     .map { it.mapToModel() }
@@ -33,7 +34,7 @@ class MovieRepositoryImpl constructor(
     }
 
     override fun getRecommendations(id: Int, page: Int): Single<List<Movie>> {
-        return dataSource.getRecommendations(id, page)
+        return dataSourceRemote.getRecommendations(id, page)
             .map { it ->
                 it.asSequence()
                     .map { it.mapToModel() }

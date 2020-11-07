@@ -1,9 +1,6 @@
 package com.uoooo.simple.example.data.repository
 
-import com.uoooo.simple.example.data.source.MovieDataSource
-import com.uoooo.simple.example.data.source.MovieDataSourceImpl
 import com.uoooo.simple.example.data.source.remote.MovieDataSourceRemote
-import com.uoooo.simple.example.data.source.remote.MovieDataSourceRemoteImpl
 import com.uoooo.simple.example.data.source.remote.api.MovieService
 import com.uoooo.simple.example.domain.repository.MovieRepository
 import io.mockk.*
@@ -13,13 +10,12 @@ import org.junit.Test
 
 class MovieRepositoryTest {
     private val movieService: MovieService = mockk()
-    private val movieDataSourceRemote: MovieDataSourceRemote = spyk(MovieDataSourceRemoteImpl(movieService))
-    private val movieDataSource: MovieDataSource = spyk(MovieDataSourceImpl(movieDataSourceRemote))
-    private val movieRepository: MovieRepository = MovieRepositoryImpl(movieDataSource)
+    private val movieDataSourceRemote: MovieDataSourceRemote = spyk(MovieDataSourceRemote(movieService))
+    private val movieRepository: MovieRepository = MovieRepositoryImpl(movieDataSourceRemote)
 
     @Before
     fun before() {
-        clearMocks(movieService, movieDataSourceRemote, movieDataSource, movieService)
+        clearMocks(movieService, movieDataSourceRemote, movieService)
     }
 
     @Test
@@ -31,6 +27,5 @@ class MovieRepositoryTest {
             .assertComplete()
         verify { movieService.getPopularMovie(any()) }
         verify { movieDataSourceRemote.getPopularMovie(any()) }
-        verify { movieDataSource.getPopularMovie(any()) }
     }
 }

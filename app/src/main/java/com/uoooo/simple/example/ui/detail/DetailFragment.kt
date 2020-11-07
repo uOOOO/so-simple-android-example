@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -27,6 +28,7 @@ import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.subjects.PublishSubject
 import io.sellmair.disposer.Disposer
@@ -34,15 +36,12 @@ import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
 import kotlinx.android.synthetic.main.layout_detail.*
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.ext.getFullName
 
+@AndroidEntryPoint
 class DetailFragment : Fragment(), MotionLayout.TransitionListener {
-    private val recommendMovieViewModel: RecommendMovieViewModel by viewModel()
-    private val videoViewModel: VideoViewModel by viewModel()
-    private val playManager: ExoPlayerPlayManager by lazy {
-        ExoPlayerPlayManager()
-    }
+    private val recommendMovieViewModel: RecommendMovieViewModel by viewModels()
+    private val videoViewModel: VideoViewModel by viewModels()
+    private val playManager: ExoPlayerPlayManager by lazy { ExoPlayerPlayManager() }
     private val listenerDisposer = Disposer.create(onDestroy)
 
     override fun onCreateView(
@@ -90,7 +89,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
                             .replace(
                                 containerId,
                                 newInstance(movie),
-                                DetailFragment::class.getFullName()
+                                DetailFragment::class.qualifiedName
                             )
                             .commit()
                     }

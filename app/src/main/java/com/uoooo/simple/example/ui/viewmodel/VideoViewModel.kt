@@ -4,20 +4,23 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.SparseArray
+import androidx.hilt.lifecycle.ViewModelInject
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
 import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
 import com.uoooo.simple.example.ui.common.BaseViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.Observable
 import io.reactivex.Single
 import io.reactivex.schedulers.Schedulers
 
 // TODO : need view state - loading, error...
-class VideoViewModel(application: Application, private val repository: MovieRepository) :
-    BaseViewModel(application) {
-
+class VideoViewModel @ViewModelInject constructor(
+    @ApplicationContext context: Context,
+    private val repository: MovieRepository
+) : BaseViewModel(context as Application) {
     fun getYouTubeVideo(id: Int): Single<Uri> {
         return repository.getVideos(id)
             .flatMapObservable { Observable.fromIterable(it) }
@@ -30,7 +33,10 @@ class VideoViewModel(application: Application, private val repository: MovieRepo
     private fun getYoutubeLink(key: String): Single<Uri> {
         return Single.create {
             CustomYouTubeExtractor(getApplication(), object : CustomYouTubeExtractor.Listener {
-                override fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?) {
+                override fun onExtractionComplete(
+                    ytFiles: SparseArray<YtFile>?,
+                    videoMeta: VideoMeta?
+                ) {
                     if (it.isDisposed) {
                         return
                     }
@@ -45,7 +51,8 @@ class VideoViewModel(application: Application, private val repository: MovieRepo
         }
     }
 
-    private class CustomYouTubeExtractor(context: Context, private val listener: Listener) : YouTubeExtractor(context) {
+    private class CustomYouTubeExtractor(context: Context, private val listener: Listener) :
+        YouTubeExtractor(context) {
         interface Listener {
             fun onExtractionComplete(ytFiles: SparseArray<YtFile>?, videoMeta: VideoMeta?)
         }

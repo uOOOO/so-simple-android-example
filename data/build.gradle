@@ -1,6 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
+apply plugin: 'dagger.hilt.android.plugin'
 
 android {
     compileSdkVersion vers.compileSdk
@@ -21,6 +22,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
@@ -28,9 +33,11 @@ dependencies {
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$vers.kotlin"
     implementation "androidx.appcompat:appcompat:$vers.android.appcompat"
-    implementation "org.koin:koin-android:$vers.koin"
+    implementation "com.google.dagger:hilt-android:$vers.hilt"
+    kapt "com.google.dagger:hilt-android-compiler:$vers.hilt"
     implementation "io.reactivex.rxjava2:rxjava:$vers.rx.java"
-    implementation "com.squareup.retrofit2:retrofit:$vers.retrofit"
+    api "com.squareup.okhttp3:okhttp:$vers.okhttp"
+    api "com.squareup.retrofit2:retrofit:$vers.retrofit"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$vers.retrofit"
     implementation "com.squareup.retrofit2:converter-moshi:$vers.retrofit"
     implementation "com.squareup.okhttp3:logging-interceptor:$vers.okhttp"
