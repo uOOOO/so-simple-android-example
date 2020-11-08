@@ -4,10 +4,10 @@ import android.annotation.SuppressLint
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.TrackGroupArray
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.jakewharton.rxbinding3.internal.checkMainThread
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.MainThreadDisposable
+import com.jakewharton.rxbinding4.internal.checkMainThread
+import io.reactivex.rxjava3.android.MainThreadDisposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observer
 
 fun SimpleExoPlayer.events(): Observable<ExoPlayerEvent> {
     return ExoPlayerEventObservable(this)

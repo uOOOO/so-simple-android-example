@@ -3,10 +3,10 @@ package com.uoooo.simple.example.ui.player.rx
 import android.annotation.SuppressLint
 import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.exoplayer2.video.VideoListener
-import com.jakewharton.rxbinding3.internal.checkMainThread
-import io.reactivex.Observable
-import io.reactivex.Observer
-import io.reactivex.android.MainThreadDisposable
+import com.jakewharton.rxbinding4.internal.checkMainThread
+import io.reactivex.rxjava3.android.MainThreadDisposable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Observer
 
 fun SimpleExoPlayer.videos(): Observable<ExoPlayerVideo> {
     return ExoPlayerVideoObservable(this)

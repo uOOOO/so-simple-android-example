@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -22,27 +23,26 @@ import com.uoooo.simple.example.data.ServerConfig
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
-import com.uoooo.simple.example.ui.movie.RecommendMovieAdapter
-import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
+import com.uoooo.simple.example.repo.RecommendMovieDiffCallback
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel
 import com.uoooo.simple.example.ui.viewmodel.VideoViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.PublishSubject
-import io.sellmair.disposer.Disposer
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
 import kotlinx.android.synthetic.main.layout_detail.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.rx3.asObservable
 
 @AndroidEntryPoint
 class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     private val recommendMovieViewModel: RecommendMovieViewModel by viewModels()
     private val videoViewModel: VideoViewModel by viewModels()
     private val playManager: ExoPlayerPlayManager by lazy { ExoPlayerPlayManager() }
-    private val listenerDisposer = Disposer.create(onDestroy)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,6 +52,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         return inflater.inflate(R.layout.fragment_detail, container, false)
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (arguments?.getSerializable(BUNDLE_OBJECT) as Movie?)?.let { movie ->
@@ -61,6 +62,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         }
     }
 
+    @ExperimentalCoroutinesApi
     private fun initView(movie: Movie) {
         motionRootView.setTransitionListener(this)
         initVideo(movie.backdropPath)
@@ -80,6 +82,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         playerView.setErrorMessageProvider { Pair.create(-1, "Error") }
     }
 
+    @ExperimentalCoroutinesApi
     private fun initRecommendationList() {
         val itemClickObserver = PublishSubject.create<Movie>().apply {
             subscribe { movie ->
@@ -97,41 +100,35 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
             }.disposeBy(onDestroy)
         }
 
-        val adapter = RecommendMovieAdapter(itemClickObserver)
+        val pagingDataAdapter =
+            RecommendMoviePagingDataAdapter(RecommendMovieDiffCallback(), itemClickObserver)
 
         recommendationList.apply {
             setHasFixedSize(true)
-            this.adapter = adapter
+            this.adapter = pagingDataAdapter
             this.layoutManager = LinearLayoutManager(context)
         }
 
-        recommendMovieViewModel.getLoadingState()
-            .observeOn(AndroidSchedulers.mainThread())
+        pagingDataAdapter.loadStateFlow.asObservable()
             .subscribe {
-                Log.d(TAG, "LoadingState = $it")
-                when (it) {
-                    is LoadingState.InitialLoading -> {
+                when (it.refresh) {
+                    is LoadState.Error -> {
+                        progressView.visibility = View.GONE
+                    }
+                    is LoadState.NotLoading -> {
+                        progressView.visibility = View.GONE
+                        recommendationText.visibility = View.VISIBLE
+                    }
+                    is LoadState.Loading -> {
                         progressView.visibility = View.VISIBLE
                         recommendationText.visibility = View.GONE
                     }
-                    is LoadingState.Loading -> {
-
-                    }
-                    is LoadingState.Loaded -> {
-                        progressView.visibility = View.GONE
-                        recommendationText.visibility =
-                            if (adapter.itemCount == 0 && it.isEmptyResult) View.GONE else View.VISIBLE
-                    }
-                    is LoadingState.Error -> {
-                        progressView.visibility = View.GONE
-                    }
                 }
             }
-            .disposeBy(onDestroy)
 
-        recommendMovieViewModel.getPagedList()
+        recommendMovieViewModel.recommendMovieList
             .subscribe {
-                adapter.submitList(it)
+                pagingDataAdapter.submitData(lifecycle, it)
             }
             .disposeBy(onDestroy)
     }
@@ -150,7 +147,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     }
 
     private fun loadRecommendation(id: Int) {
-        recommendMovieViewModel.loadRecommendationList(id, 1, 1)
+        recommendMovieViewModel.loadRecommendMovie(id, 1, 1)
     }
 
     private fun playerPrepare(uri: Uri) {
@@ -184,10 +181,12 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     private fun bindPlayerListeners() {
         playManager.addAnalyticsListener(EventLogger(playManager.trackSelector))
         // TODO : handle player nullable more properly
-        listenerDisposer += playManager.getEventListener()?.subscribe { onExoPlayerEventListener(it) }
-            ?: return
-        listenerDisposer += playManager.getVideoListener()?.subscribe { onExoPlayerVideoListener(it) }
-            ?: return
+        playManager.getEventListener()
+            ?.subscribe { onExoPlayerEventListener(it) }
+            ?.disposeBy(onDestroy)
+        playManager.getVideoListener()
+            ?.subscribe { onExoPlayerVideoListener(it) }
+            ?.disposeBy(onDestroy)
     }
 
     private fun showBackdropImage() {
@@ -204,6 +203,11 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         playerView.showController()
         playerView.controllerHideOnTouch = false
         super.onStop()
+    }
+
+    override fun onDestroyView() {
+        recommendationList.adapter = null
+        super.onDestroyView()
     }
 
     override fun onDestroy() {

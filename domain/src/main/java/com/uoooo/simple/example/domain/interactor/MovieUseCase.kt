@@ -3,7 +3,7 @@ package com.uoooo.simple.example.domain.interactor
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class MovieUseCase @Inject constructor(private val repository: MovieRepository) {

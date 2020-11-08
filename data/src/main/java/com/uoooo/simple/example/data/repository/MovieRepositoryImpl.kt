@@ -5,7 +5,7 @@ import com.uoooo.simple.example.data.source.remote.MovieDataSourceRemote
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(

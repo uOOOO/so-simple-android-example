@@ -1,7 +1,6 @@
 package com.uoooo.simple.example
 
 import android.app.Application
-import com.akaita.java.rxjava2debug.RxJava2Debug
 import com.bumptech.glide.Glide
 import dagger.hilt.android.HiltAndroidApp
 
@@ -13,7 +12,7 @@ class ExampleApplication : Application() {
     }
 
     private fun initRxJava2Debug() {
-        RxJava2Debug.enableRxJava2AssemblyTracking()
+
     }
 
     override fun onLowMemory() {

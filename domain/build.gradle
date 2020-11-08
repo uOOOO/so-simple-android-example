@@ -7,7 +7,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     api "com.google.dagger:dagger:$vers.dagger"
     kapt "com.google.dagger:dagger-compiler:$vers.dagger"
-    implementation "io.reactivex.rxjava2:rxjava:$vers.rx.java"
+    api "io.reactivex.rxjava3:rxjava:$vers.rx.java"
 
     testImplementation "junit:junit:$vers.junit"
     testImplementation "io.mockk:mockk:$vers.mockk"

@@ -5,24 +5,26 @@ import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
-import com.jakewharton.rxbinding3.swiperefreshlayout.refreshes
+import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
-import com.uoooo.simple.example.ui.movie.PopularMovieAdapter
-import com.uoooo.simple.example.ui.movie.repository.model.LoadingState
+import com.uoooo.simple.example.repo.PopularMovieDiffCallback
 import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.subjects.PublishSubject
+import io.reactivex.rxjava3.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.rx3.asObservable
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val popularMovieViewModel: PopularMovieViewModel by viewModels()
 
+    @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 //            .commitAllowingStateLoss()
     }
 
+    @ExperimentalCoroutinesApi
     private fun initMovieList() {
         val itemClickObserver = PublishSubject.create<Movie>().apply {
             subscribe {
@@ -48,52 +51,48 @@ class MainActivity : AppCompatActivity() {
             }.disposeBy(onDestroy)
         }
 
-        val adapter = PopularMovieAdapter(itemClickObserver)
+        val pagingDataAdapter =
+            PopularMoviePagingDataAdapter(PopularMovieDiffCallback(), itemClickObserver)
+
+        pagingDataAdapter.loadStateFlow.asObservable()
+            .subscribe {
+                when (it.refresh) {
+                    is LoadState.Error, is LoadState.NotLoading ->
+                        progressView.visibility = View.GONE
+                    is LoadState.Loading ->
+                        progressView.visibility = View.VISIBLE
+                }
+            }
+            .disposeBy(onDestroy)
 
         movieList.apply {
             setHasFixedSize(true)
-            this.adapter = adapter
+            this.adapter = pagingDataAdapter
             this.layoutManager = GridLayoutManager(context, 3)
         }
 
         movieListSwipeRefresh.refreshes()
             .subscribe {
-                popularMovieViewModel.invalidate()
+                popularMovieViewModel.invalidatePopularMovie()
             }
             .disposeBy(onDestroy)
 
-        popularMovieViewModel.getLoadingState()
-            .observeOn(AndroidSchedulers.mainThread())
+        popularMovieViewModel.popularMovieList
             .subscribe {
-                Log.d(TAG, "LoadingState = $it")
-                when (it) {
-                    is LoadingState.InitialLoading -> {
-                        progressView.visibility = View.VISIBLE
-                    }
-                    is LoadingState.Loading -> {
-
-                    }
-                    is LoadingState.Loaded -> {
-                        progressView.visibility = View.GONE
-                    }
-                    is LoadingState.Error -> {
-                        progressView.visibility = View.GONE
-                    }
-                }
-            }
-            .disposeBy(onDestroy)
-
-        popularMovieViewModel.getPagedList()
-            .subscribe {
-                adapter.submitList(it)
+                pagingDataAdapter.submitData(lifecycle, it)
                 movieListSwipeRefresh.isRefreshing = false
             }
             .disposeBy(onDestroy)
     }
 
+    override fun onDestroy() {
+        movieList.adapter = null
+        super.onDestroy()
+    }
+
     override fun onBackPressed() {
         supportFragmentManager.findFragmentByTag(DetailFragment::class.qualifiedName)?.run {
-            Log.d(TAG, "onBackPressed : ${this}")
+            Log.d(TAG, "onBackPressed : $this")
             supportFragmentManager.beginTransaction()
                 .remove(this@run)
                 .commitAllowingStateLoss()

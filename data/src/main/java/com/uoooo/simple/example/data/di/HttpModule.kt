@@ -18,7 +18,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.CallAdapter
 import retrofit2.Converter
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
@@ -41,7 +41,7 @@ object HttpModule {
 
     @Singleton
     @Provides
-    fun provideCallAdapterFactory(): CallAdapter.Factory = RxJava2CallAdapterFactory.create()
+    fun provideCallAdapterFactory(): CallAdapter.Factory = RxJava3CallAdapterFactory.create()
 
     @Singleton
     @Provides

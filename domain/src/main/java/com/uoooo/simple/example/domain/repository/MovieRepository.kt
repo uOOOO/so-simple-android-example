@@ -2,7 +2,7 @@ package com.uoooo.simple.example.domain.repository
 
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.domain.model.Video
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 
 interface MovieRepository {
     fun getPopular(page: Int): Single<List<Movie>>

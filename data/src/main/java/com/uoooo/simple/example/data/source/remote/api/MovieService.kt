@@ -3,7 +3,7 @@ package com.uoooo.simple.example.data.source.remote.api
 import com.uoooo.simple.example.data.source.remote.response.PopularMovieResponse
 import com.uoooo.simple.example.data.source.remote.response.RecommendMovieResponse
 import com.uoooo.simple.example.data.source.remote.response.VideosResponse
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

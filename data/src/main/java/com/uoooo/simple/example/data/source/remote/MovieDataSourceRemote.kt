@@ -3,7 +3,7 @@ package com.uoooo.simple.example.data.source.remote
 import com.uoooo.simple.example.data.entity.Movie
 import com.uoooo.simple.example.data.entity.Video
 import com.uoooo.simple.example.data.source.remote.api.MovieService
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class MovieDataSourceRemote @Inject constructor(private val movieService: MovieService) {

@@ -19,7 +19,7 @@ import com.uoooo.simple.example.ui.player.rx.ExoPlayerEvent
 import com.uoooo.simple.example.ui.player.rx.ExoPlayerVideo
 import com.uoooo.simple.example.ui.player.rx.events
 import com.uoooo.simple.example.ui.player.rx.videos
-import io.reactivex.Observable
+import io.reactivex.rxjava3.core.Observable
 import java.net.CookieHandler
 import java.net.CookieManager
 import java.net.CookiePolicy

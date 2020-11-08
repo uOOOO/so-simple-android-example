@@ -12,9 +12,9 @@ import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
 import com.uoooo.simple.example.ui.common.BaseViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import io.reactivex.Observable
-import io.reactivex.Single
-import io.reactivex.schedulers.Schedulers
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 // TODO : need view state - loading, error...
 class VideoViewModel @ViewModelInject constructor(
