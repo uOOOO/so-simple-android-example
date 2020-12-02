@@ -10,7 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
-import com.uoooo.simple.example.repo.PopularMovieDiffCallback
+import com.uoooo.simple.example.ui.paging.PopularMovieDiffCallback
+import com.uoooo.simple.example.ui.paging.PopularMoviePagingDataAdapter
 import com.uoooo.simple.example.ui.viewmodel.PopularMovieViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.subjects.PublishSubject

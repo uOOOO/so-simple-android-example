@@ -1,4 +1,4 @@
-package com.uoooo.simple.example.ui.detail
+package com.uoooo.simple.example.ui.paging
 
 import android.view.LayoutInflater
 import android.view.View
@@ -15,32 +15,30 @@ import com.uoooo.simple.example.data.ServerConfig
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import io.reactivex.rxjava3.core.Observer
-import kotlinx.android.synthetic.main.recyclerview_item_recommend_movie.view.*
+import kotlinx.android.synthetic.main.recyclerview_item_popular_movie.view.*
 
-class RecommendMoviePagingDataAdapter constructor(
+class PopularMoviePagingDataAdapter constructor(
     diffCallback: DiffUtil.ItemCallback<Movie>,
     private val itemClickObserver: Observer<Movie>? = null
-) : PagingDataAdapter<Movie, RecommendMoviePagingDataAdapter.RecommendMovieViewHolder>(diffCallback) {
+) : PagingDataAdapter<Movie, PopularMoviePagingDataAdapter.PopularMovieViewHolder>(diffCallback) {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendMovieViewHolder {
-        return RecommendMovieViewHolder(parent)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularMovieViewHolder {
+        return PopularMovieViewHolder(parent)
     }
 
-    override fun onBindViewHolder(holder: RecommendMovieViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PopularMovieViewHolder, position: Int) {
         holder.bind(getItem(position), itemClickObserver)
     }
 
-    class RecommendMovieViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
+    class PopularMovieViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
         LayoutInflater.from(parent.context)
-            .inflate(R.layout.recyclerview_item_recommend_movie, parent, false)
+            .inflate(R.layout.recyclerview_item_popular_movie, parent, false)
     ) {
         private val itemRootLayout = itemView.itemRootLayout
         private val posterImage = itemView.posterImage
-        private val voteAverageProgress = itemView.voteAverageProgress
-        private val voteAverageText = itemView.voteAverageText
         private val titleText = itemView.titleText
+        private val voteAverageText = itemView.voteAverageText
         private val releaseDateText = itemView.releaseDateText
-        private val overviewText = itemView.overviewText
 
         fun bind(movie: Movie?, itemClickObserver: Observer<Movie>?) {
             if (movie == null) {
@@ -55,12 +53,7 @@ class RecommendMoviePagingDataAdapter constructor(
 
                 titleText.text = movie.title
                 releaseDateText.text = movie.releaseDate
-                overviewText.text = movie.overview
-
-                (movie.voteAverage * 10).toInt().run {
-                    voteAverageProgress.progress = this
-                    voteAverageText.text = String.format("%d%%", this)
-                }
+                voteAverageText.text = String.format("%.1f", movie.voteAverage)
 
                 itemClickObserver?.apply {
                     itemRootLayout.clicks()

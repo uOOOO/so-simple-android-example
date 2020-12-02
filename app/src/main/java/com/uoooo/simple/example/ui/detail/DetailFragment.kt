@@ -23,7 +23,8 @@ import com.uoooo.simple.example.data.ServerConfig
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
-import com.uoooo.simple.example.repo.RecommendMovieDiffCallback
+import com.uoooo.simple.example.ui.paging.RecommendMovieDiffCallback
+import com.uoooo.simple.example.ui.paging.RecommendMoviePagingDataAdapter
 import com.uoooo.simple.example.ui.player.ExoPlayerPlayManager
 import com.uoooo.simple.example.ui.player.rx.*
 import com.uoooo.simple.example.ui.viewmodel.RecommendMovieViewModel

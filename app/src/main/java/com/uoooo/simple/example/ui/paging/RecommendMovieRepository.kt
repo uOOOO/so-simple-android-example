@@ -1,4 +1,4 @@
-package com.uoooo.simple.example.repo
+package com.uoooo.simple.example.ui.paging
 
 import androidx.paging.Pager
 import androidx.paging.PagingConfig

@@ -1,4 +1,4 @@
-package com.uoooo.simple.example.repo
+package com.uoooo.simple.example.ui.paging
 
 import androidx.recyclerview.widget.DiffUtil
 import com.uoooo.simple.example.domain.model.Movie

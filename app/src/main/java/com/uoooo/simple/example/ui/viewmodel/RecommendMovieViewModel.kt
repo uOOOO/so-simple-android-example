@@ -10,7 +10,7 @@ import com.jakewharton.rxrelay3.BehaviorRelay
 import com.jakewharton.rxrelay3.PublishRelay
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.common.BaseViewModel
-import com.uoooo.simple.example.repo.RecommendMovieRepository
+import com.uoooo.simple.example.ui.paging.RecommendMovieRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Observable

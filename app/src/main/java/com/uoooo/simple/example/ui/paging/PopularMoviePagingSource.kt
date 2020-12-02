@@ -1,4 +1,4 @@
-package com.uoooo.simple.example.repo
+package com.uoooo.simple.example.ui.paging
 
 import androidx.paging.rxjava3.RxPagingSource
 import com.uoooo.simple.example.domain.interactor.MovieUseCase
