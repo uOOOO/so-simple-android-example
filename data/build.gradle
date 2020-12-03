@@ -31,7 +31,6 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$vers.kotlin"
     implementation "androidx.appcompat:appcompat:$vers.android.appcompat"
     implementation "com.google.dagger:hilt-android:$vers.hilt"
     kapt "com.google.dagger:hilt-android-compiler:$vers.hilt"
