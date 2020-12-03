@@ -7,8 +7,7 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.widget.FrameLayout
-import androidx.constraintlayout.motion.widget.MotionLayout
-import com.uoooo.simple.example.R
+import com.uoooo.simple.example.databinding.LayoutDetailBinding
 
 // https://medium.com/vrt-digital-studio/picture-in-picture-video-overlay-with-motionlayout-a9404663b9e7
 class VideoOverlayView @JvmOverloads constructor(
@@ -16,23 +15,18 @@ class VideoOverlayView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : FrameLayout(context, attrs, defStyleAttr) {
-    private val motionLayout: MotionLayout =
-        LayoutInflater.from(context).inflate(R.layout.layout_detail, this, false) as MotionLayout
-    private val touchableArea: View
+    private val binding: LayoutDetailBinding =
+        LayoutDetailBinding.inflate(LayoutInflater.from(context), this, true)
 
-    private val clickableArea: View
+    private val touchableArea: View = binding.motionInteractView
+    private val clickableArea: View = binding.playerView
 
     private var startX: Float? = null
     private var startY: Float? = null
 
-    init {
-        touchableArea = motionLayout.findViewById(R.id.motionInteractView)
-        clickableArea = motionLayout.findViewById(R.id.playerView)
-        addView(motionLayout)
-    }
-
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
-        val isInProgress = (motionLayout.progress > 0.0f && motionLayout.progress < 1.0f)
+        val isInProgress =
+            (binding.motionRootView.progress > 0.0f && binding.motionRootView.progress < 1.0f)
         val isInTarget = touchEventInsideTargetViewExceptTop(touchableArea, ev)
 
         return if (isInProgress || isInTarget) {
@@ -77,7 +71,7 @@ class VideoOverlayView @JvmOverloads constructor(
                         val endX = ev.x
                         val endY = ev.y
                         if (isClick(startX!!, endX, startY!!, endY)) {
-                            if (motionLayout.currentState == motionLayout.startState) {
+                            if (binding.motionRootView.currentState == binding.motionRootView.startState) {
                                 clickableArea.performClick()
                             }
                             if (doClickTransition()) {
@@ -94,11 +88,11 @@ class VideoOverlayView @JvmOverloads constructor(
 
     private fun doClickTransition(): Boolean {
         var isClickHandled = false
-        if (motionLayout.progress < 0.05F) {
+        if (binding.motionRootView.progress < 0.05F) {
 //            motionLayout.transitionToEnd()
 //            isClickHandled = true
-        } else if (motionLayout.progress > 0.95F) {
-            motionLayout.transitionToStart()
+        } else if (binding.motionRootView.progress > 0.95F) {
+            binding.motionRootView.transitionToStart()
             isClickHandled = true
         }
         return isClickHandled

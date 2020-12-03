@@ -8,18 +8,25 @@ import android.view.LayoutInflater
 import android.view.SurfaceView
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.util.EventLogger
 import com.uoooo.simple.example.GlideApp
 import com.uoooo.simple.example.R
 import com.uoooo.simple.example.data.ServerConfig
+import com.uoooo.simple.example.databinding.FragmentDetailBinding
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.extension.printEnhancedStackTrace
 import com.uoooo.simple.example.ui.common.getPosterImageUrl
@@ -34,8 +41,6 @@ import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
-import kotlinx.android.synthetic.main.exo_simple_player_view.view.*
-import kotlinx.android.synthetic.main.layout_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.rx3.asObservable
 
@@ -45,12 +50,17 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     private val videoViewModel: VideoViewModel by viewModels()
     private val playManager: ExoPlayerPlayManager by lazy { ExoPlayerPlayManager() }
 
+    private var binding: FragmentDetailBinding? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_detail, container, false)
+    ): View {
+        return FragmentDetailBinding.inflate(inflater, container, false).let {
+            binding = it
+            it.root
+        }
     }
 
     @ExperimentalCoroutinesApi
@@ -65,18 +75,20 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
 
     @ExperimentalCoroutinesApi
     private fun initView(movie: Movie) {
-        motionRootView.setTransitionListener(this)
+        binding!!.findViewById<MotionLayout>(R.id.motionRootView).setTransitionListener(this)
         initVideo(movie.backdropPath)
         initRecommendationList()
     }
 
     private fun initVideo(backdropPath: String?) {
-        GlideApp.with(playerView.exo_backdrop)
+        val backdrop: ImageView = binding!!.findViewById(R.id.exo_backdrop)
+        GlideApp.with(backdrop)
             .load(getPosterImageUrl(backdropPath, ServerConfig.ImageSize.NORMAL))
             .transition(DrawableTransitionOptions.withCrossFade())
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(playerView.exo_backdrop)
+            .into(backdrop)
 
+        val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
         playerView.useController = true
         playerView.controllerShowTimeoutMs = 1500 * 3
         // TODO : error message
@@ -104,12 +116,15 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         val pagingDataAdapter =
             RecommendMoviePagingDataAdapter(RecommendMovieDiffCallback(), itemClickObserver)
 
+        val recommendationList: RecyclerView = binding!!.findViewById(R.id.recommendationList)
         recommendationList.apply {
             setHasFixedSize(true)
             this.adapter = pagingDataAdapter
             this.layoutManager = LinearLayoutManager(context)
         }
 
+        val progressView: View = binding!!.findViewById(R.id.progressView)
+        val recommendationText: View = binding!!.findViewById(R.id.recommendationText)
         pagingDataAdapter.loadStateFlow.asObservable()
             .subscribe {
                 when (it.refresh) {
@@ -153,7 +168,13 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
 
     private fun playerPrepare(uri: Uri) {
         context?.let { context ->
-            playManager.prepare(context, playerView, null, uri, null)
+            playManager.prepare(
+                context,
+                binding!!.findViewById(R.id.playerView),
+                null,
+                uri,
+                null
+            )
             bindPlayerListeners()
         }
     }
@@ -172,11 +193,14 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
 
     private fun playerError() {
         playManager.pause()
+        val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
         playerView.hideController()
         playerView.useController = false
         // TODO : error message
-        playerView.exo_error_message.text = "Error"
-        playerView.exo_error_message.visibility = View.VISIBLE
+        playerView.findViewById<TextView>(R.id.exo_error_message).apply {
+            text = "Error"
+            visibility = View.VISIBLE
+        }
     }
 
     private fun bindPlayerListeners() {
@@ -191,23 +215,25 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     }
 
     private fun showBackdropImage() {
-        playerView.exo_backdrop.visibility = View.VISIBLE
+        binding!!.findViewById<View>(R.id.exo_backdrop).visibility = View.VISIBLE
     }
 
     private fun hideBackdropImage() {
-        playerView.exo_backdrop.visibility = View.INVISIBLE
+        binding!!.findViewById<View>(R.id.exo_backdrop).visibility = View.INVISIBLE
     }
 
     override fun onStop() {
         playerPause()
         showBackdropImage()
+        val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
         playerView.showController()
         playerView.controllerHideOnTouch = false
         super.onStop()
     }
 
     override fun onDestroyView() {
-        recommendationList.adapter = null
+        binding!!.findViewById<RecyclerView>(R.id.recommendationList).adapter = null
+        binding = null
         super.onDestroyView()
     }
 
@@ -227,6 +253,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
 
     private fun onPlayerStateChanged(event: ExoPlayerEventPlayerStateChanged) {
         Log.d(TAG, "onPlayerStateChanged() event = $event")
+        val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
         when (event.playbackState) {
             Player.STATE_READY -> {
                 if (!isResumed) {
@@ -255,7 +282,8 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     }
 
     private fun onSurfaceSizeChanged(event: ExoPlayerVideoSurfaceSizeChanged) {
-        val surfaceView = playerView.videoSurfaceView
+        val surfaceView =
+            binding!!.findViewById<PlayerView>(R.id.playerView).videoSurfaceView
         if (surfaceView is SurfaceView) {
             surfaceView.holder.setFixedSize(event.width, event.height)
         }
@@ -270,6 +298,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
             p2 == p0.startState
         ) {
             Log.d(TAG, "onTransitionStarted")
+            val playerView:PlayerView = binding!!.findViewById(R.id.playerView)
             playerView.useController = false
             playerView.hideController()
         }
@@ -283,14 +312,15 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
             value = 0f
         }
         value = 1 - value
-        recommendationList.alpha = value
-        recommendationText.alpha = value
+        binding!!.findViewById<View>(R.id.recommendationList).alpha = value
+        binding!!.findViewById<View>(R.id.recommendationText).alpha = value
 
         if (p1 == p0?.startState &&
             p2 == p0.endState &&
             p3 > 0.05f
         ) {
             Log.d(TAG, "onTransitionChange")
+            val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
             playerView.useController = false
             playerView.hideController()
         }
@@ -299,6 +329,7 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
     override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
         if (p1 == p0?.startState) {
             Log.d(TAG, "onTransitionCompleted")
+            val playerView: PlayerView = binding!!.findViewById(R.id.playerView)
             playerView.useController = true
             playerView.showController()
         }
@@ -318,3 +349,5 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         }
     }
 }
+
+fun <T : View> ViewDataBinding.findViewById(@IdRes id: Int) = root.findViewById<T>(id)

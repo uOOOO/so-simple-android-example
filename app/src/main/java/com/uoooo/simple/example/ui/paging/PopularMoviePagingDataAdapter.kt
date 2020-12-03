@@ -6,16 +6,10 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.jakewharton.rxbinding4.view.clicks
-import com.uoooo.simple.example.GlideApp
-import com.uoooo.simple.example.R
-import com.uoooo.simple.example.data.ServerConfig
+import com.uoooo.simple.example.databinding.RecyclerviewItemPopularMovieBinding
 import com.uoooo.simple.example.domain.model.Movie
-import com.uoooo.simple.example.ui.common.getPosterImageUrl
 import io.reactivex.rxjava3.core.Observer
-import kotlinx.android.synthetic.main.recyclerview_item_popular_movie.view.*
 
 class PopularMoviePagingDataAdapter constructor(
     diffCallback: DiffUtil.ItemCallback<Movie>,
@@ -23,43 +17,38 @@ class PopularMoviePagingDataAdapter constructor(
 ) : PagingDataAdapter<Movie, PopularMoviePagingDataAdapter.PopularMovieViewHolder>(diffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PopularMovieViewHolder {
-        return PopularMovieViewHolder(parent)
+        return PopularMovieViewHolder.create(parent)
     }
 
     override fun onBindViewHolder(holder: PopularMovieViewHolder, position: Int) {
         holder.bind(getItem(position), itemClickObserver)
     }
 
-    class PopularMovieViewHolder(parent: ViewGroup) : RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context)
-            .inflate(R.layout.recyclerview_item_popular_movie, parent, false)
-    ) {
-        private val itemRootLayout = itemView.itemRootLayout
-        private val posterImage = itemView.posterImage
-        private val titleText = itemView.titleText
-        private val voteAverageText = itemView.voteAverageText
-        private val releaseDateText = itemView.releaseDateText
-
+    class PopularMovieViewHolder private constructor(
+        private val binding: RecyclerviewItemPopularMovieBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
         fun bind(movie: Movie?, itemClickObserver: Observer<Movie>?) {
             if (movie == null) {
                 itemView.visibility = View.GONE
             } else {
                 itemView.visibility = View.VISIBLE
-                GlideApp.with(posterImage)
-                    .load(getPosterImageUrl(movie.posterPath, ServerConfig.ImageSize.NORMAL))
-                    .transition(DrawableTransitionOptions.withCrossFade())
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .into(posterImage)
-
-                titleText.text = movie.title
-                releaseDateText.text = movie.releaseDate
-                voteAverageText.text = String.format("%.1f", movie.voteAverage)
+                binding.movie = movie
 
                 itemClickObserver?.apply {
-                    itemRootLayout.clicks()
+                    binding.root.clicks()
                         .map { movie }
                         .subscribe(this)
                 }
+            }
+        }
+
+        companion object {
+            fun create(parent: ViewGroup): PopularMovieViewHolder {
+                return PopularMovieViewHolder(
+                    RecyclerviewItemPopularMovieBinding.inflate(
+                        LayoutInflater.from(parent.context), parent, false
+                    )
+                )
             }
         }
     }

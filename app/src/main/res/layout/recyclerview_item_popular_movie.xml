@@ -1,89 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    app:cardUseCompatPadding="true">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/itemRootLayout"
+    <data>
+
+        <import type="com.uoooo.simple.example.ui.common.UtilKt" />
+
+        <variable
+            name="movie"
+            type="com.uoooo.simple.example.domain.model.Movie" />
+    </data>
+
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#303030"
-        android:clickable="true"
-        android:focusable="true">
+        app:cardUseCompatPadding="true">
 
-        <ImageView
-            android:id="@+id/posterImage"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@null"
-            android:scaleType="fitXY"
-            app:layout_constraintDimensionRatio="1:1.5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <TextView
-            android:id="@+id/titleText"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:padding="5dp"
-            android:textColor="@android:color/white"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/posterImage"
-            tools:text="Title" />
+            android:background="#303030">
 
-        <TextView
-            android:id="@+id/voteAverageText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleText"
-            tools:text="7.9" />
+            <ImageView
+                android:id="@+id/posterImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:contentDescription="@null"
+                android:scaleType="fitXY"
+                android:src="@{movie}"
+                app:layout_constraintDimensionRatio="1:1.5"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@tools:sample/avatars" />
 
-        <ImageView
-            android:id="@+id/thumbUpImage"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginEnd="5dp"
-            android:contentDescription="@null"
-            android:src="@drawable/icon_thumb_up"
-            app:layout_constraintBottom_toBottomOf="@+id/voteAverageText"
-            app:layout_constraintDimensionRatio="1:1"
-            app:layout_constraintEnd_toStartOf="@+id/voteAverageText"
-            app:layout_constraintTop_toTopOf="@+id/voteAverageText" />
+            <TextView
+                android:id="@+id/titleText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="5dp"
+                android:text="@{movie.title}"
+                android:textColor="@android:color/white"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/posterImage"
+                tools:text="Title" />
 
-        <TextView
-            android:id="@+id/releaseDateText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:includeFontPadding="false"
-            android:maxLines="1"
-            android:textColor="@android:color/darker_gray"
-            android:textSize="12sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/thumbUpImage"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleText"
-            tools:text="2019-07-01" />
+            <TextView
+                android:id="@+id/voteAverageText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@{UtilKt.averagePer10(movie)}"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/titleText"
+                tools:text="7.9" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.cardview.widget.CardView>
+            <ImageView
+                android:id="@+id/thumbUpImage"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="5dp"
+                android:contentDescription="@null"
+                android:src="@drawable/icon_thumb_up"
+                app:layout_constraintBottom_toBottomOf="@+id/voteAverageText"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@+id/voteAverageText"
+                app:layout_constraintTop_toTopOf="@+id/voteAverageText" />
+
+            <TextView
+                android:id="@+id/releaseDateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:includeFontPadding="false"
+                android:maxLines="1"
+                android:text="@{movie.releaseDate}"
+                android:textColor="@android:color/darker_gray"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/thumbUpImage"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/titleText"
+                tools:text="2019-07-01" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+</layout>

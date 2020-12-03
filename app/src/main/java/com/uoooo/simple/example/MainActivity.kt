@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.jakewharton.rxbinding4.swiperefreshlayout.refreshes
+import com.uoooo.simple.example.databinding.ActivityMainBinding
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.detail.DetailFragment
 import com.uoooo.simple.example.ui.paging.PopularMovieDiffCallback
@@ -17,18 +18,19 @@ import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.rxjava3.subjects.PublishSubject
 import io.sellmair.disposer.disposeBy
 import io.sellmair.disposer.onDestroy
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.rx3.asObservable
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val popularMovieViewModel: PopularMovieViewModel by viewModels()
+    private var binding: ActivityMainBinding? = null
 
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding!!.root)
 
         initMovieList()
         popularMovieViewModel.loadPopularMovie(1, 6)
@@ -59,20 +61,20 @@ class MainActivity : AppCompatActivity() {
             .subscribe {
                 when (it.refresh) {
                     is LoadState.Error, is LoadState.NotLoading ->
-                        progressView.visibility = View.GONE
+                        binding?.progressView?.visibility = View.GONE
                     is LoadState.Loading ->
-                        progressView.visibility = View.VISIBLE
+                        binding?.progressView?.visibility = View.VISIBLE
                 }
             }
             .disposeBy(onDestroy)
 
-        movieList.apply {
+        binding!!.movieList.apply {
             setHasFixedSize(true)
             this.adapter = pagingDataAdapter
             this.layoutManager = GridLayoutManager(context, 3)
         }
 
-        movieListSwipeRefresh.refreshes()
+        binding!!.movieListSwipeRefresh.refreshes()
             .subscribe {
                 popularMovieViewModel.invalidatePopularMovie()
             }
@@ -81,13 +83,14 @@ class MainActivity : AppCompatActivity() {
         popularMovieViewModel.popularMovieList
             .subscribe {
                 pagingDataAdapter.submitData(lifecycle, it)
-                movieListSwipeRefresh.isRefreshing = false
+                binding?.movieListSwipeRefresh?.isRefreshing = false
             }
             .disposeBy(onDestroy)
     }
 
     override fun onDestroy() {
-        movieList.adapter = null
+        binding!!.movieList.adapter = null
+        binding = null
         super.onDestroy()
     }
 

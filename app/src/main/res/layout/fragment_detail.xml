@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.uoooo.simple.example.ui.common.widget.VideoOverlayView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <com.uoooo.simple.example.ui.common.widget.VideoOverlayView
+        android:id="@+id/video_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</layout>
+

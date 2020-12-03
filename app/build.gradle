@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin'
 
@@ -32,6 +31,10 @@ android {
     }
     sourceSets {
         main.res.srcDirs += 'src/main/res-override'
+    }
+    buildFeatures {
+        dataBinding true
+        viewBinding true
     }
 }
 
