@@ -24,13 +24,13 @@ import kotlinx.coroutines.rx3.asObservable
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val popularMovieViewModel: PopularMovieViewModel by viewModels()
-    private var binding: ActivityMainBinding? = null
+    private lateinit var binding: ActivityMainBinding
 
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding!!.root)
+        setContentView(binding.root)
 
         initMovieList()
         popularMovieViewModel.loadPopularMovie(1, 6)
@@ -61,20 +61,20 @@ class MainActivity : AppCompatActivity() {
             .subscribe {
                 when (it.refresh) {
                     is LoadState.Error, is LoadState.NotLoading ->
-                        binding?.progressView?.visibility = View.GONE
+                        binding.progressView.visibility = View.GONE
                     is LoadState.Loading ->
-                        binding?.progressView?.visibility = View.VISIBLE
+                        binding.progressView.visibility = View.VISIBLE
                 }
             }
             .disposeBy(onDestroy)
 
-        binding!!.movieList.apply {
+        binding.movieList.apply {
             setHasFixedSize(true)
             this.adapter = pagingDataAdapter
             this.layoutManager = GridLayoutManager(context, 3)
         }
 
-        binding!!.movieListSwipeRefresh.refreshes()
+        binding.movieListSwipeRefresh.refreshes()
             .subscribe {
                 popularMovieViewModel.invalidatePopularMovie()
             }
@@ -83,14 +83,13 @@ class MainActivity : AppCompatActivity() {
         popularMovieViewModel.popularMovieList
             .subscribe {
                 pagingDataAdapter.submitData(lifecycle, it)
-                binding?.movieListSwipeRefresh?.isRefreshing = false
+                binding.movieListSwipeRefresh.isRefreshing = false
             }
             .disposeBy(onDestroy)
     }
 
     override fun onDestroy() {
-        binding!!.movieList.adapter = null
-        binding = null
+        binding.movieList.adapter = null
         super.onDestroy()
     }
 
