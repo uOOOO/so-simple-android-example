@@ -4,20 +4,22 @@ import android.app.Application
 import android.content.Context
 import android.net.Uri
 import android.util.SparseArray
-import androidx.hilt.lifecycle.ViewModelInject
 import at.huber.youtubeExtractor.VideoMeta
 import at.huber.youtubeExtractor.YouTubeExtractor
 import at.huber.youtubeExtractor.YtFile
 import com.uoooo.simple.example.domain.model.Video
 import com.uoooo.simple.example.domain.repository.MovieRepository
 import com.uoooo.simple.example.ui.common.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
+import javax.inject.Inject
 
 // TODO : need view state - loading, error...
-class VideoViewModel @ViewModelInject constructor(
+@HiltViewModel
+class VideoViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val repository: MovieRepository
 ) : BaseViewModel(context as Application) {

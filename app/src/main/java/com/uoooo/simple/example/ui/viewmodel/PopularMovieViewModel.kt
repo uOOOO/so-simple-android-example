@@ -2,7 +2,6 @@ package com.uoooo.simple.example.ui.viewmodel
 
 import android.app.Application
 import android.content.Context
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.rxjava3.cachedIn
@@ -11,12 +10,15 @@ import com.jakewharton.rxrelay3.PublishRelay
 import com.uoooo.simple.example.domain.model.Movie
 import com.uoooo.simple.example.ui.common.BaseViewModel
 import com.uoooo.simple.example.ui.paging.PopularMovieRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Observable
 import io.sellmair.disposer.disposeBy
+import javax.inject.Inject
 
-class PopularMovieViewModel @ViewModelInject constructor(
+@HiltViewModel
+class PopularMovieViewModel @Inject constructor(
     @ApplicationContext context: Context,
     private val repository: PopularMovieRepository
 ) : BaseViewModel(context as Application) {
@@ -29,8 +31,10 @@ class PopularMovieViewModel @ViewModelInject constructor(
     private val invalidate = PublishRelay.create<Unit>().toSerialized()
 
     init {
+        @Suppress("EXPERIMENTAL_API_USAGE")
         loadPopularMovie.toFlowable(BackpressureStrategy.LATEST)
             .switchMap {
+                @Suppress("EXPERIMENTAL_API_USAGE")
                 repository
                     .getPopularMovie(it.first, it.second)
             }

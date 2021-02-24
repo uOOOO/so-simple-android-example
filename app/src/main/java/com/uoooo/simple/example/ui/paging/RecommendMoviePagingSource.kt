@@ -1,5 +1,6 @@
 package com.uoooo.simple.example.ui.paging
 
+import androidx.paging.PagingState
 import androidx.paging.rxjava3.RxPagingSource
 import com.uoooo.simple.example.domain.interactor.MovieUseCase
 import com.uoooo.simple.example.domain.model.Movie
@@ -33,5 +34,9 @@ class RecommendMoviePagingSource constructor(
             LoadResult.Page.COUNT_UNDEFINED,
             LoadResult.Page.COUNT_UNDEFINED
         )
+    }
+
+    override fun getRefreshKey(state: PagingState<Int, Movie>): Int? {
+        return state.anchorPosition
     }
 }

@@ -46,7 +46,10 @@ dependencies {
     implementation "androidx.core:core-ktx:$vers.android.coreKtx"
     implementation "androidx.fragment:fragment-ktx:$vers.android.fragment"
     implementation "androidx.cardview:cardview:$vers.android.cardview"
-    implementation "androidx.constraintlayout:constraintlayout:$vers.android.constraintlayout"
+    // TODO : player animation and layout are broken above 2.0.2
+    implementation("androidx.constraintlayout:constraintlayout:$vers.android.constraintlayout") {
+        version { strictly vers.android.constraintlayout }
+    }
     implementation "androidx.paging:paging-runtime-ktx:$vers.android.paging"
     implementation "androidx.paging:paging-rxjava3:$vers.android.paging"
     implementation "com.google.android.material:material:$vers.android.material"

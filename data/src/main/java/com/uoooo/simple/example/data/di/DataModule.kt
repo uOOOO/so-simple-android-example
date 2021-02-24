@@ -7,11 +7,11 @@ import com.uoooo.simple.example.domain.repository.MovieRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 
 @Module(includes = [HttpModule::class])
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 object DataModule {
     @Provides
     fun provideMovieService(retrofit: Retrofit): MovieService =

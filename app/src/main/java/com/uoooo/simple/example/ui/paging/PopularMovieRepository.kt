@@ -13,6 +13,7 @@ class PopularMovieRepository @Inject constructor(private val movieUseCase: Movie
     private var pagingSource: PopularMoviePagingSource? = null
 
     fun getPopularMovie(startPage: Int, endPage: Int): Flowable<PagingData<Movie>> {
+        @Suppress("EXPERIMENTAL_API_USAGE")
         return Pager(
             config = PagingConfig(pageSize = 21, enablePlaceholders = false),
             pagingSourceFactory = {

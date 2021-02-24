@@ -13,6 +13,7 @@ class RecommendMovieRepository @Inject constructor(private val movieUseCase: Mov
     private var pagingSource: RecommendMoviePagingSource? = null
 
     fun getRecommendMovie(id: Int, startPage: Int, endPage: Int): Flowable<PagingData<Movie>> {
+        @Suppress("EXPERIMENTAL_API_USAGE")
         return Pager(
             config = PagingConfig(pageSize = 21, enablePlaceholders = false),
             pagingSourceFactory = {
