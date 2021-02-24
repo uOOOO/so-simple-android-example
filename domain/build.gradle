@@ -4,6 +4,8 @@ apply plugin: 'kotlin-kapt'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    // The reason some dependencies are api not implementation is...
+    // https://github.com/google/dagger/issues/1991
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
     api "com.google.dagger:dagger:$vers.dagger"
     kapt "com.google.dagger:dagger-compiler:$vers.dagger"

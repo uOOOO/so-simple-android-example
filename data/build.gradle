@@ -35,6 +35,8 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$vers.hilt"
     kapt "com.google.dagger:hilt-android-compiler:$vers.hilt"
     implementation "io.reactivex.rxjava3:rxjava:$vers.rx.java"
+    // The reason some dependencies are api not implementation is...
+    // https://github.com/google/dagger/issues/1991
     api "com.squareup.okhttp3:okhttp:$vers.okhttp"
     api "com.squareup.retrofit2:retrofit:$vers.retrofit"
     implementation "com.squareup.retrofit2:adapter-rxjava3:$vers.retrofit"
