@@ -153,8 +153,8 @@ class DetailFragment : Fragment(), MotionLayout.TransitionListener {
         videoViewModel.getYouTubeVideo(id)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ uri ->
-//                playerPrepare(uri)
-//                playerStart()
+                playerPrepare(uri)
+                playerStart()
             }, {
                 it.printEnhancedStackTrace()
                 playerError()
