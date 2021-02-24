@@ -4,7 +4,7 @@
     <Transition
         motion:constraintSetEnd="@id/end"
         motion:constraintSetStart="@id/start"
-        motion:duration="300"
+        motion:duration="200"
         motion:motionInterpolator="easeInOut">
 
         <OnSwipe
@@ -26,24 +26,15 @@
                 motion:framePosition="0"
                 motion:motionTarget="@id/dimBackgroundView" />
 
-            <KeyPosition
-                motion:curveFit="linear"
-                motion:framePosition="90"
-                motion:motionTarget="@id/playerView"
-                motion:percentWidth="0"
-                motion:percentX="0" />
+            <KeyAttribute
+                android:alpha="0"
+                motion:framePosition="100"
+                motion:motionTarget="@id/infoView" />
 
-            <KeyPosition
-                motion:curveFit="linear"
-                motion:framePosition="90"
-                motion:motionTarget="@id/motionInteractView"
-                motion:percentWidth="0" />
-
-            <KeyPosition
-                motion:curveFit="linear"
-                motion:framePosition="90"
-                motion:motionTarget="@id/infoView"
-                motion:percentWidth="0" />
+            <KeyAttribute
+                android:alpha="1"
+                motion:framePosition="95"
+                motion:motionTarget="@id/infoView" />
         </KeyFrameSet>
     </Transition>
 
@@ -83,9 +74,6 @@
             android:id="@id/motionInteractView"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginBottom="8dp"
             motion:layout_constraintBottom_toBottomOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintStart_toStartOf="parent" />
@@ -98,14 +86,5 @@
             motion:layout_constraintDimensionRatio="H,1:2.5"
             motion:layout_constraintStart_toStartOf="@id/motionInteractView"
             motion:layout_constraintTop_toTopOf="@id/motionInteractView" />
-
-        <Constraint
-            android:id="@id/infoView"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            motion:layout_constraintBottom_toBottomOf="@id/motionInteractView"
-            motion:layout_constraintEnd_toEndOf="@id/motionInteractView"
-            motion:layout_constraintStart_toStartOf="@id/motionInteractView"
-            motion:layout_constraintTop_toBottomOf="@id/motionInteractView" />
     </ConstraintSet>
 </MotionScene>
